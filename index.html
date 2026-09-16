@@ -1,3075 +1,512 @@
-<!DOCTYPE html>
-<html lang="id" data-theme="light">
+<!doctype html>
+<html lang=id data-theme=light>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portofolio — David Firdaus · 2026</title>
-<meta name="description" content="Portofolio personal David Firdaus — Web Developer & UI Designer. Membangun pengalaman digital yang berkesan.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;500&family=Roboto:wght@100;300;400&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<style>
-  /* ==============================================
-     VARIABEL TEMA
-     Mendefinisikan token desain untuk mode terang dan gelap
-     ============================================== */
-  :root {
-    --bg: #f2ede7;
-    --bg-soft: rgba(255, 255, 255, 0.35);
-    --bg-card: rgba(255, 255, 255, 0.4);
-    --text: #161616;
-    --text-emp: #2a2a2a;
-    --text-mute: #535353;
-    --text-faint: #9a948c;
-    --line: #ddd6cc;
-    --inverse: #ffffff;
-    --tontonan-bg: #1a1a1a;
-    --tontonan-border: rgba(255, 255, 255, 0.1);
-    --noise-opacity: 0.035;
-    --handle-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    --card-shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.08);
-    --radius-sm: 2px;
-    --ease-quiet: cubic-bezier(.22, 1, .36, 1);
-    --ease-emphasis: cubic-bezier(.16, 1, .3, 1);
-    --nav-height: 72px;
-  }
-
-  [data-theme="dark"] {
-    --bg: #141414;
-    --bg-soft: rgba(255, 255, 255, 0.035);
-    --bg-card: rgba(255, 255, 255, 0.04);
-    --text: #f2ede7;
-    --text-emp: #e0dbd4;
-    --text-mute: #a8a39d;
-    --text-faint: #6e6963;
-    --line: #2a2a2a;
-    --inverse: #141414;
-    --tontonan-bg: #0a0a0a;
-    --tontonan-border: rgba(255, 255, 255, 0.08);
-    --noise-opacity: 0.05;
-    --handle-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(242, 237, 231, 0.12);
-    --card-shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.5);
-  }
-
-  /* ==============================================
-     RESET & DASAR
-     ============================================== */
-  *, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Roboto', sans-serif;
-    font-weight: 300;
-    line-height: 1.6;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    transition: background 0.6s var(--ease-quiet), color 0.6s var(--ease-quiet);
-  }
-
-  /* Mencegah warna default tautan browser dan menonaktifkan dekorasi */
-  a, a:visited {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  /* Kursor kustom hanya untuk perangkat dengan pointer presisi */
-  @media (pointer: fine) {
-    body { cursor: none; }
-    a, button { cursor: none; }
-  }
-
-  ::selection {
-    background: var(--text);
-    color: var(--bg);
-  }
-
-  /* Fokus keyboard untuk aksesibilitas */
-  :focus {
-    outline: none;
-  }
-  :focus-visible {
-    outline: 2px solid var(--text);
-    outline-offset: 3px;
-  }
-
-  /* Offset jangkar untuk kompensasi navigasi tetap */
-  section[id] {
-    scroll-margin-top: var(--nav-height);
-  }
-
-  /* ==============================================
-     OVERLAY NOISE
-     Tekstur halus pada seluruh halaman
-     ============================================== */
-  .noise-overlay {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    opacity: var(--noise-opacity);
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
-    animation: noise 18s steps(8) infinite;
-    transition: opacity 0.6s var(--ease-quiet);
-  }
-  @keyframes noise {
-    0%, 100% { transform: translate(0, 0); }
-    20%      { transform: translate(-10%, 5%); }
-    50%      { transform: translate(5%, -10%); }
-    80%      { transform: translate(-15%, 0); }
-  }
-
-  /* ==============================================
-     PRELOADER
-     Layer pembuka yang menampilkan animasi pemuatan halaman
-     ============================================== */
-  .preloader {
-    position: fixed;
-    inset: 0;
-    z-index: 10001;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.8s var(--ease-quiet), visibility 0.8s var(--ease-quiet);
-  }
-  .preloader.is-loaded {
-    opacity: 0;
-    visibility: hidden;
-  }
-  .preloader-content {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  .preloader-name {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: clamp(1rem, 3vw, 1.4rem);
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    color: var(--text);
-  }
-  .preloader-bar {
-    width: 200px;
-    height: 1px;
-    background: var(--line);
-    overflow: hidden;
-    position: relative;
-  }
-  .preloader-fill {
-    position: absolute;
-    inset: 0;
-    background: var(--text);
-    transform-origin: left;
-    animation: preloaderFill 1.4s var(--ease-emphasis) forwards;
-  }
-  @keyframes preloaderFill {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-  }
-  .preloader-meta {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-
-  /* ==============================================
-     INDIKATOR PROGRES GULIR
-     Bar tipis di bagian atas halaman
-     ============================================== */
-  .scroll-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 2px;
-    background: var(--text);
-    z-index: 101;
-    width: 0%;
-    transition: width 0.08s linear;
-  }
-
-  /* ==============================================
-     KURSOR KUSTOM
-     Titik dan cincin yang mengikuti pergerakan mouse
-     ============================================== */
-  .cursor-dot, .cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 10000;
-    opacity: 0;
-    transition: opacity 0.25s ease-out;
-    will-change: transform;
-    mix-blend-mode: difference;
-  }
-  .cursor-dot {
-    width: 6px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-  }
-  .cursor-ring {
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 50%;
-    transition: opacity 0.25s ease-out, width 0.35s var(--ease-quiet), height 0.35s var(--ease-quiet);
-  }
-  .cursor-dot.is-visible,
-  .cursor-ring.is-visible { opacity: 1; }
-  @media (pointer: coarse) {
-    .cursor-dot, .cursor-ring { display: none; }
-  }
-
-  /* ==============================================
-     NAVIGASI
-     Bar tetap di bagian atas dengan blur dan toggle tema
-     ============================================== */
-  .nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    height: var(--nav-height);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2.5rem;
-    background: color-mix(in srgb, var(--bg) 80%, transparent);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--line);
-    transition: background 0.6s var(--ease-quiet), border-color 0.6s var(--ease-quiet);
-  }
-  .nav-logo {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.95rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text);
-    white-space: nowrap;
-  }
-  .nav-logo span { color: var(--text-faint); }
-
-  .nav-menu {
-    display: flex;
-    gap: 2.5rem;
-    list-style: none;
-  }
-  .nav-menu a {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    transition: color 0.3s var(--ease-quiet);
-    position: relative;
-    padding: 0.3rem 0;
-  }
-  .nav-menu a::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--text);
-    transition: width 0.4s var(--ease-quiet);
-  }
-  .nav-menu a:hover,
-  .nav-menu a.is-active {
-    color: var(--text);
-  }
-  .nav-menu a:hover::after,
-  .nav-menu a.is-active::after {
-    width: 100%;
-  }
-
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  .nav-meta {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  /* Tombol toggle tema pada navigasi */
-  .theme-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    background: transparent;
-    color: var(--text);
-    transition: border-color 0.4s var(--ease-quiet), transform 0.4s var(--ease-quiet);
-  }
-  .theme-toggle:hover {
-    border-color: var(--text);
-    transform: rotate(15deg);
-  }
-  .theme-toggle svg {
-    width: 15px;
-    height: 15px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  /* Tampilkan ikon sesuai tema aktif */
-  [data-theme="light"] .theme-toggle .icon-moon { display: block; }
-  [data-theme="light"] .theme-toggle .icon-sun { display: none; }
-  [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
-  [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
-
-  /* Tombol hamburger untuk mobile */
-  .nav-toggle {
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    background: none;
-    border: none;
-    padding: 8px;
-    z-index: 101;
-    color: var(--text);
-  }
-  .nav-toggle span {
-    width: 26px;
-    height: 1px;
-    background: var(--text);
-    transition: all 0.4s var(--ease-quiet);
-    display: block;
-  }
-  .nav-toggle.is-open span:nth-child(1) { transform: translateY(3.5px) rotate(45deg); }
-  .nav-toggle.is-open span:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
-
-  /* Overlay menu mobile */
-  .nav-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 99;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s var(--ease-quiet), visibility 0.5s var(--ease-quiet);
-  }
-  .nav-overlay.is-open {
-    opacity: 1;
-    visibility: visible;
-  }
-  .nav-overlay ul {
-    list-style: none;
-    text-align: center;
-  }
-  .nav-overlay li {
-    margin: 1.5rem 0;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.5s var(--ease-quiet), transform 0.5s var(--ease-quiet);
-  }
-  .nav-overlay.is-open li {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  /* Animasi bertahap untuk setiap item menu mobile */
-  .nav-overlay.is-open li:nth-child(1) { transition-delay: 0.1s; }
-  .nav-overlay.is-open li:nth-child(2) { transition-delay: 0.18s; }
-  .nav-overlay.is-open li:nth-child(3) { transition-delay: 0.26s; }
-  .nav-overlay.is-open li:nth-child(4) { transition-delay: 0.34s; }
-  .nav-overlay.is-open li:nth-child(5) { transition-delay: 0.42s; }
-  .nav-overlay a {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(2rem, 8vw, 3rem);
-    color: var(--text);
-    letter-spacing: 0.02em;
-    display: inline-block;
-    transition: transform 0.5s var(--ease-quiet), font-style 0.3s var(--ease-quiet);
-  }
-  .nav-overlay a:hover {
-    transform: translateX(10px);
-    font-style: italic;
-  }
-
-  @media (max-width: 768px) {
-    .nav { padding: 0 1.5rem; }
-    .nav-menu, .nav-meta { display: none; }
-    .nav-toggle { display: flex; }
-    .nav-actions { gap: 1rem; }
-  }
-
-  /* ==============================================
-     HERO
-     Bagian pembuka dengan judul, deskripsi, dan CTA
-     ============================================== */
-  .hero {
-    min-height: 100vh;
-    padding: calc(var(--nav-height) + 4rem) 2.5rem 4rem;
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-grid {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 5rem;
-    align-items: center;
-  }
-  .hero-eyebrow {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    margin-bottom: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .hero-eyebrow::before {
-    content: '';
-    width: 2.5rem;
-    height: 1px;
-    background: var(--text-mute);
-  }
-  .hero-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(2.5rem, 7vw, 7rem);
-    line-height: 0.98;
-    letter-spacing: -0.02em;
-    margin-bottom: 2.2rem;
-  }
-  .line-mask { overflow: hidden; display: block; }
-  .line { transform: translateY(110%); display: block; }
-  .hero-title .italic {
-    font-style: italic;
-    font-weight: 200;
-    color: var(--text-emp);
-  }
-  .hero-subtitle {
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--text-mute);
-    max-width: 32rem;
-    margin-bottom: 2.5rem;
-    font-weight: 300;
-  }
-  .hero-meta {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--line);
-    max-width: 32rem;
-  }
-  .hero-meta > div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .hero-meta span {
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-  .hero-meta strong {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.88rem;
-    color: var(--text);
-    letter-spacing: 0.04em;
-  }
-  .hero-portrait {
-    aspect-ratio: 4 / 5;
-    width: 100%;
-    max-width: 400px;
-    margin-left: auto;
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius-sm);
-    padding: 14px;
-    border: 1px solid var(--line);
-    background: var(--bg);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
-  }
-  
-  .hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.8s var(--ease-quiet);
-    border-radius: 2px;
-  }
-
-  .hero-portrait:hover .hero-image {
-    transform: scale(1.04);
-  }
-
-  .hero-portrait .photo-placeholder {
-    height: 100%;
-  }
-  .hero-cta-wrap {
-    margin-top: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  /* Indikator gulir di bagian bawah hero */
-  .hero-scroll-cue {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-    opacity: 0.5;
-  }
-  .hero-scroll-cue span {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-  .hero-scroll-cue-line {
-    width: 1px;
-    height: 40px;
-    background: var(--text-faint);
-    position: relative;
-    overflow: hidden;
-  }
-  .hero-scroll-cue-line::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: var(--bg);
-    animation: scrollLine 2s var(--ease-quiet) infinite;
-  }
-  @keyframes scrollLine {
-    0%   { transform: translateY(-100%); }
-    100% { transform: translateY(200%); }
-  }
-
-  @media (max-width: 900px) {
-    .hero { padding: calc(var(--nav-height) + 2rem) 1.5rem 3rem; min-height: auto; }
-    .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-    .hero-portrait { max-width: 300px; margin: 0 auto; order: -1; }
-    .hero-meta { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .hero-eyebrow { margin-bottom: 1.5rem; }
-    .hero-title { margin-bottom: 1.5rem; }
-    .hero-subtitle { margin-bottom: 2rem; }
-    .hero-cta-wrap { margin-top: 1.5rem; }
-    .hero-scroll-cue { display: none; }
-  }
-
-  /* ==============================================
-     PLACEHOLDER FOTO
-     Komponen placeholder untuk gambar yang belum ditambahkan
-     ============================================== */
-  .photo-placeholder {
-    width: 100%;
-    height: 100%;
-    min-height: 280px;
-    border: 1px dashed var(--text-faint);
-    background: var(--bg-soft);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.85rem;
-    text-align: center;
-    padding: 2rem;
-    position: relative;
-    transition: all 0.5s var(--ease-quiet);
-    border-radius: var(--radius-sm);
-  }
-  .photo-placeholder::before,
-  .photo-placeholder::after {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border: 1px solid var(--text-faint);
-  }
-  .photo-placeholder::before {
-    top: 0.75rem;
-    left: 0.75rem;
-    border-right: none;
-    border-bottom: none;
-  }
-  .photo-placeholder::after {
-    bottom: 0.75rem;
-    right: 0.75rem;
-    border-left: none;
-    border-top: none;
-  }
-  .photo-placeholder:hover {
-    border-color: var(--text-mute);
-    background: var(--bg-card);
-  }
-  .placeholder-icon {
-    width: 32px;
-    height: 32px;
-    color: var(--text-faint);
-    margin-bottom: 0.5rem;
-    transition: color 0.4s var(--ease-quiet);
-  }
-  .photo-placeholder:hover .placeholder-icon {
-    color: var(--text-mute);
-  }
-  .placeholder-label {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.72rem;
-    letter-spacing: 0.25em;
-    color: var(--text-mute);
-    text-transform: uppercase;
-  }
-  .placeholder-hint {
-    font-size: 0.66rem;
-    letter-spacing: 0.08em;
-    color: var(--text-faint);
-    line-height: 1.5;
-  }
-
-  /* ==============================================
-     MARQUEE
-     Pita berjalan dengan daftar keahlian
-     ============================================== */
-  .marquee {
-    overflow: hidden;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 1.5rem 0;
-    background: var(--bg-soft);
-    transition: background 0.6s var(--ease-quiet), border-color 0.6s var(--ease-quiet);
-  }
-  .marquee:hover .marquee-track {
-    animation-play-state: paused;
-  }
-  .marquee-track {
-    display: flex;
-    gap: 4rem;
-    animation: marquee 40s linear infinite;
-    white-space: nowrap;
-    width: max-content;
-  }
-  .marquee-item {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 1.5rem;
-    letter-spacing: 0.15em;
-    color: var(--text-emp);
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 4rem;
-  }
-  .marquee-item::after {
-    content: '✦';
-    font-size: 0.9rem;
-    color: var(--text-faint);
-  }
-  @keyframes marquee {
-    to { transform: translateX(-50%); }
-  }
-  @media (max-width: 768px) {
-    .marquee-item { font-size: 1.1rem; gap: 2.5rem; }
-    .marquee-track { gap: 2.5rem; }
-  }
-
-  /* ==============================================
-     STRUKTUR GENERIC
-     ============================================== */
-  section {
-    padding: 8rem 2.5rem;
-    position: relative;
-  }
-  .section-header {
-    max-width: 1400px;
-    margin: 0 auto 4rem;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 3rem;
-    align-items: end;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--line);
-  }
-  .section-number {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.82rem;
-    letter-spacing: 0.25em;
-    color: var(--text-faint);
-  }
-  .section-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(2rem, 5vw, 4rem);
-    line-height: 1;
-    letter-spacing: -0.01em;
-  }
-  .section-title .italic {
-    font-style: italic;
-    color: var(--text-mute);
-  }
-  .section-tag {
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    text-align: right;
-    white-space: nowrap;
-  }
-  .section-desc {
-    max-width: 50rem;
-    margin: 0 auto 4rem;
-    font-size: 1.05rem;
-    color: var(--text-mute);
-    line-height: 1.7;
-  }
-
-  @media (max-width: 768px) {
-    section { padding: 5rem 1.5rem; }
-    .section-header {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      margin-bottom: 2.5rem;
-    }
-    .section-tag { text-align: left; }
-  }
-
-  /* ==============================================
-     INDEKS / STATISTIK
-     Grid angka statistik dengan animasi hitung naik
-     ============================================== */
-  .index {
-    padding: 5rem 2.5rem;
-    border-bottom: 1px solid var(--line);
-  }
-  .index-grid {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 3rem;
-  }
-  .index-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    position: relative;
-  }
-  .index-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--text);
-    transition: width 0.6s var(--ease-quiet);
-  }
-  .index-item.is-in::before {
-    width: 2rem;
-  }
-  .index-number {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(2.2rem, 5vw, 3rem);
-    line-height: 1;
-    color: var(--text);
-    padding-top: 1rem;
-  }
-  .index-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    margin-top: 0.3rem;
-  }
-  .index-desc {
-    font-size: 0.82rem;
-    color: var(--text-mute);
-    line-height: 1.5;
-    margin-top: 0.5rem;
-  }
-  @media (max-width: 768px) {
-    .index { padding: 3.5rem 1.5rem; }
-    .index-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
-  }
-
-  /* ==============================================
-     TENTANG
-     Layout dua kolom dengan foto dan biografi
-     ============================================== */
-  .about-grid {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 5rem;
-    align-items: start;
-  }
-  .about-photo {
-    aspect-ratio: 4 / 5;
-    position: sticky;
-    top: calc(var(--nav-height) + 2rem);
-    overflow: hidden;
-    border-radius: var(--radius-sm);
-    padding: 14px;
-    border: 1px solid var(--line);
-    background: var(--bg);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
-  }
-
-  .about-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    border-radius: 2px;
-    transition: transform 0.8s var(--ease-quiet);
-  }
-
-  .about-photo:hover .about-image {
-    transform: scale(1.04);
-  }
-  .about-content p {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: var(--text-emp);
-    margin-bottom: 1.8rem;
-  }
-  .about-content p:first-of-type::first-letter {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 4.5rem;
-    float: left;
-    line-height: 0.85;
-    margin-right: 0.8rem;
-    margin-top: 0.3rem;
-    color: var(--text);
-  }
-  .about-content p:last-of-type {
-    color: var(--text-mute);
-    font-size: 0.95rem;
-  }
-  .about-quote {
-    margin: 3rem 0;
-    padding: 2rem 0;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-style: italic;
-    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-    line-height: 1.4;
-    color: var(--text-emp);
-    position: relative;
-  }
-  .about-quote::before {
-    content: '"';
-    position: absolute;
-    top: -0.5rem;
-    left: -0.5rem;
-    font-size: 3rem;
-    color: var(--text-faint);
-    opacity: 0.3;
-  }
-  .about-signature {
-    margin-top: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  .signature-line {
-    flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-  .signature-text {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.78rem;
-    letter-spacing: 0.2em;
-    color: var(--text-mute);
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-  @media (max-width: 900px) {
-    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-    .about-photo { position: relative; top: 0; max-width: 340px; }
-    .about-content p { font-size: 0.98rem; }
-    .about-quote { font-size: 1.2rem; margin: 2rem 0; padding: 1.5rem 0; }
-    .about-content p:first-of-type::first-letter { font-size: 3.5rem; }
-  }
-
-  /* ==============================================
-     KEAHLIAN
-     Daftar keahlian dengan efek hover
-     ============================================== */
-  .expertise-list {
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-  .expertise-item {
-    display: grid;
-    grid-template-columns: 60px 1fr 1.5fr 120px;
-    gap: 3rem;
-    padding: 2.2rem 0;
-    border-bottom: 1px solid var(--line);
-    align-items: center;
-    transition: padding 0.5s var(--ease-quiet), background 0.5s var(--ease-quiet);
-    position: relative;
-    cursor: default;
-  }
-  .expertise-item:first-child { border-top: 1px solid var(--line); }
-  .expertise-item:hover {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    background: var(--bg-soft);
-  }
-  .expertise-num {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.95rem;
-    color: var(--text-faint);
-    letter-spacing: 0.1em;
-  }
-  .expertise-name {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: clamp(1.3rem, 2vw, 1.6rem);
-    letter-spacing: 0.01em;
-    transition: transform 0.4s var(--ease-quiet);
-  }
-  .expertise-item:hover .expertise-name {
-    transform: translateX(8px);
-  }
-  .expertise-desc {
-    font-size: 0.86rem;
-    color: var(--text-mute);
-    line-height: 1.6;
-  }
-  .expertise-year {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.82rem;
-    color: var(--text-faint);
-    letter-spacing: 0.15em;
-    text-align: right;
-    text-transform: uppercase;
-  }
-  @media (max-width: 900px) {
-    .expertise-item {
-      grid-template-columns: 36px 1fr;
-      gap: 1rem;
-      padding: 1.6rem 0;
-    }
-    .expertise-item:hover {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-    .expertise-num { font-size: 0.82rem; }
-    .expertise-name { font-size: 1.2rem; }
-    .expertise-item:hover .expertise-name { transform: none; }
-    .expertise-desc, .expertise-year {
-      grid-column: 2;
-      text-align: left;
-    }
-    .expertise-year { font-size: 0.72rem; margin-top: 0.4rem; }
-  }
-
-  /* ==============================================
-     KARYA (GULIR HORIZONTAL PINNED)
-     Konversi gulir vertikal menjadi horizontal pada desktop
-     ============================================== */
-  .works-section { padding: 0; }
-  .works-header { padding: 8rem 2.5rem 4rem; }
-  .works-viewport {
-    position: relative;
-    width: 100%;
-  }
-  .works-pin {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-  }
-  .works-track {
-    display: flex;
-    gap: 2rem;
-    padding: 0 5rem;
-    will-change: transform;
-  }
-  .work-card {
-    flex: 0 0 360px;
-    height: 70vh;
-    max-height: 580px;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg-card);
-    border: 1px solid var(--line);
-    padding: 1.5rem;
-    transition: background 0.6s var(--ease-quiet), border-color 0.6s var(--ease-quiet), box-shadow 0.5s var(--ease-quiet);
-    position: relative;
-    border-radius: var(--radius-sm);
-  }
-  .work-card:hover {
-    border-color: var(--text-mute);
-    box-shadow: var(--card-shadow-hover);
-  }
-  .work-card-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    color: var(--text-mute);
-    text-transform: uppercase;
-  }
-  .work-card-image {
-    flex: 1;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-    position: relative;
-    border-radius: var(--radius-sm);
-  }
-  
-  .work-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.6s var(--ease-quiet);
-  }
-  
-  .work-card:hover .work-card-img {
-    transform: scale(1.05);
-  }
-  .work-card-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 1.35rem;
-    line-height: 1.15;
-    margin-bottom: 0.5rem;
-  }
-  .work-card-tag {
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-  .works-progress {
-    position: absolute;
-    bottom: 3rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 12rem;
-    height: 1px;
-    background: var(--line);
-    overflow: hidden;
-  }
-  .works-progress-fill {
-    height: 100%;
-    background: var(--text);
-    width: 0%;
-    transition: width 0.1s linear;
-  }
-  .works-progress-label {
-    position: absolute;
-    bottom: 4.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.68rem;
-    letter-spacing: 0.3em;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 1024px) {
-    .works-header { padding: 5rem 1.5rem 2rem; }
-    .works-pin {
-      position: relative;
-      height: auto;
-      padding: 1rem 0 3rem;
-    }
-    .works-track {
-      overflow-x: auto;
-      padding: 0 1.5rem 1rem;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .works-track::-webkit-scrollbar { display: none; }
-    .work-card {
-      flex: 0 0 280px;
-      height: 460px;
-      scroll-snap-align: start;
-      padding: 1.2rem;
-    }
-    .work-card-title { font-size: 1.15rem; }
-    .works-progress, .works-progress-label { display: none; }
-  }
-
-  /* ==============================================
-     GALERI MOSAIK
-     Grid asimetris dengan efek hover push-back
-     ============================================== */
-  .gallery-section {
-    padding: 8rem 2.5rem;
-    background: var(--bg-soft);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    transition: background 0.6s var(--ease-quiet), border-color 0.6s var(--ease-quiet);
-  }
-  .gallery-grid {
-    max-width: 1600px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-auto-rows: 80px;
-    gap: 1rem;
-  }
-  .gallery-tile {
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.7s var(--ease-emphasis), opacity 0.7s var(--ease-emphasis);
-    transform-origin: center center;
-    border-radius: var(--radius-sm);
-  }
-  .gallery-tile.t1 { grid-column: span 5; grid-row: span 5; }
-  .gallery-tile.t2 { grid-column: span 4; grid-row: span 3; }
-  .gallery-tile.t3 { grid-column: span 3; grid-row: span 4; }
-  .gallery-tile.t4 { grid-column: span 4; grid-row: span 4; }
-  .gallery-tile.t5 { grid-column: span 3; grid-row: span 3; }
-  .gallery-tile.t6 { grid-column: span 5; grid-row: span 4; }
-  .gallery-grid.has-hover .gallery-tile:not(:hover) {
-    transform: scale(0.97);
-    opacity: 0.4;
-  }
-  .gallery-tile:hover { transform: scale(1.02); }
-  .gallery-tile .photo-placeholder {
-    height: 100%;
-    min-height: 0;
-    transition: transform 0.6s var(--ease-quiet);
-  }
-  .gallery-tile:hover .photo-placeholder {
-    transform: scale(1.05);
-  }
-  .gallery-tile-label {
-    position: absolute;
-    bottom: 1rem;
-    left: 1rem;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    color: var(--text);
-    background: color-mix(in srgb, var(--bg) 92%, transparent);
-    padding: 0.4rem 0.8rem;
-    text-transform: uppercase;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.4s var(--ease-quiet);
-    border-radius: var(--radius-sm);
-    backdrop-filter: blur(4px);
-  }
-  .gallery-tile:hover .gallery-tile-label {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  @media (max-width: 900px) {
-    .gallery-section { padding: 5rem 1.5rem; }
-    .gallery-grid {
-      grid-template-columns: repeat(6, 1fr);
-      grid-auto-rows: 60px;
-      gap: 0.5rem;
-    }
-    .gallery-tile.t1 { grid-column: span 6; grid-row: span 4; }
-    .gallery-tile.t2 { grid-column: span 3; grid-row: span 3; }
-    .gallery-tile.t3 { grid-column: span 3; grid-row: span 3; }
-    .gallery-tile.t4 { grid-column: span 6; grid-row: span 3; }
-    .gallery-tile.t5 { grid-column: span 3; grid-row: span 3; }
-    .gallery-tile.t6 { grid-column: span 3; grid-row: span 3; }
-    .gallery-grid.has-hover .gallery-tile:not(:hover) {
-      transform: scale(1);
-      opacity: 1;
-    }
-    .gallery-tile:hover { transform: scale(1); }
-    .gallery-tile:hover .photo-placeholder { transform: none; }
-    .gallery-tile-label { opacity: 1; transform: translateY(0); font-size: 0.62rem; }
-  }
-
-  /* ==============================================
-     TONTONAN (VIDEO)
-     dengan latar gelap untuk pengalaman sinematik
-     ============================================== */
-  .tontonan {
-    padding: 8rem 2.5rem;
-    background: var(--tontonan-bg);
-    color: var(--inverse);
-  }
-  .tontonan .section-header { border-bottom-color: var(--tontonan-border); }
-  .tontonan .section-number,
-  .tontonan .section-tag { color: rgba(255, 255, 255, 0.5); }
-  .tontonan .section-title { color: var(--inverse); }
-  .tontonan .section-title .italic { color: rgba(255, 255, 255, 0.55); }
-  .video-feature {
-    max-width: 1400px;
-    margin: 0 auto 5rem;
-  }
-  .video-frame {
-    aspect-ratio: 16 / 9;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    background: #050505;
-    border-radius: var(--radius-sm);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    transition: box-shadow 0.4s var(--ease-quiet);
-  }
-
-  .video-card:hover .video-frame,
-  .video-feature:hover .video-frame {
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
-  }
-
-  .video-frame iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-  }
-
-  .video-frame::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-
-    border-top: 42px solid var(--tontonan-bg);
-    border-bottom: 42px solid var(--tontonan-bg);
-    border-left: 8px solid var(--tontonan-bg);
-    border-right: 8px solid var(--tontonan-bg);
-
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-    
-    border-radius: var(--radius-sm);
-  }
-  .video-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    text-align: center;
-    padding: 2rem;
-    position: relative;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.02);
-    transition: all 0.5s var(--ease-quiet);
-  }
-  .video-placeholder:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.05);
-  }
-  .video-placeholder::before,
-  .video-placeholder::after {
-    content: '';
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-  }
-  .video-placeholder::before {
-    top: 0.75rem;
-    left: 0.75rem;
-    border-right: none;
-    border-bottom: none;
-  }
-  .video-placeholder::after {
-    bottom: 0.75rem;
-    right: 0.75rem;
-    border-left: none;
-    border-top: none;
-  }
-  .play-icon {
-    width: 56px;
-    height: 56px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-    transition: all 0.4s var(--ease-quiet);
-  }
-  .video-placeholder:hover .play-icon {
-    border-color: rgba(255, 255, 255, 0.8);
-    transform: scale(1.08);
-    background: rgba(255, 255, 255, 0.08);
-  }
-  .play-icon svg {
-    width: 18px;
-    height: 18px;
-    fill: rgba(255, 255, 255, 0.8);
-    margin-left: 3px;
-  }
-  .video-placeholder .placeholder-label { color: rgba(255, 255, 255, 0.85); }
-  .video-placeholder .placeholder-hint {
-    color: rgba(255, 255, 255, 0.45);
-    max-width: 24rem;
-  }
-  .video-feature-meta {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 3rem;
-    align-items: end;
-    margin-top: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--tontonan-border);
-  }
-  .video-feature-num {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.78rem;
-    letter-spacing: 0.25em;
-    color: rgba(255, 255, 255, 0.5);
-  }
-  .video-feature-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(1.5rem, 3vw, 2.3rem);
-    line-height: 1.1;
-    color: var(--inverse);
-  }
-  .video-feature-title .italic {
-    font-style: italic;
-    color: rgba(255, 255, 255, 0.55);
-  }
-  .video-feature-duration {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.82rem;
-    letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.6);
-  }
-  .video-list {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-  }
-  .video-card {
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.4s var(--ease-quiet);
-  }
-  .video-card:hover {
-    transform: translateY(-4px);
-  }
-  .video-card .video-frame { aspect-ratio: 4 / 3; }
-  .video-card-meta {
-    margin-top: 1.5rem;
-    padding-top: 1.2rem;
-    border-top: 1px solid var(--tontonan-border);
-  }
-  .video-card-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.8rem;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.55);
-  }
-  .video-card-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 1.2rem;
-    line-height: 1.2;
-    color: var(--inverse);
-    margin-bottom: 0.6rem;
-    transition: color 0.3s var(--ease-quiet);
-  }
-  .video-card:hover .video-card-title {
-    color: rgba(255, 255, 255, 0.8);
-  }
-  .video-card-desc {
-    font-size: 0.83rem;
-    color: rgba(255, 255, 255, 0.5);
-    line-height: 1.5;
-  }
-  @media (max-width: 900px) {
-    .tontonan { padding: 5rem 1.5rem; }
-    .video-list { grid-template-columns: 1fr; gap: 2.5rem; }
-    .video-feature { margin-bottom: 3rem; }
-    .video-feature-meta { grid-template-columns: 1fr; gap: 0.8rem; }
-    .video-card-title { font-size: 1.1rem; }
-  }
-
-  /* ==============================================
-     FILOSOFI
-     Kutipan besar dengan watermark
-     ============================================== */
-  .philosophy {
-    padding: 10rem 2.5rem;
-    text-align: center;
-    overflow: hidden;
-    position: relative;
-  }
-  .philosophy-quote {
-    max-width: 1100px;
-    margin: 0 auto;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(1.5rem, 4vw, 3.2rem);
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    position: relative;
-    z-index: 1;
-  }
-  .philosophy-quote .italic {
-    font-style: italic;
-    color: var(--text-mute);
-  }
-  .philosophy-attribute {
-    margin-top: 3rem;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.78rem;
-    letter-spacing: 0.3em;
-    color: var(--text-faint);
-    text-transform: uppercase;
-  }
-  .watermark {
-    position: absolute;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 20vw;
-    line-height: 0.85;
-    color: var(--text);
-    opacity: 0.04;
-    pointer-events: none;
-    user-select: none;
-    letter-spacing: -0.02em;
-    z-index: 0;
-  }
-  .watermark-right { right: -2rem; bottom: -3rem; }
-  @media (max-width: 768px) {
-    .philosophy { padding: 6rem 1.5rem; }
-    .philosophy-attribute { margin-top: 2rem; }
-  }
-
-  /* ==============================================
-     KONTAK
-     Layout dua kolom dengan CTA dan informasi kontak
-     ============================================== */
-  .contact {
-    padding: 8rem 2.5rem 6rem;
-    border-top: 1px solid var(--line);
-  }
-  .contact-grid {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
-    align-items: start;
-  }
-  .contact-eyebrow {
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    margin-bottom: 2rem;
-  }
-  .contact-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(2.2rem, 6vw, 5rem);
-    line-height: 0.98;
-    letter-spacing: -0.02em;
-    margin-bottom: 2rem;
-  }
-  .contact-title .italic {
-    font-style: italic;
-    color: var(--text-mute);
-  }
-  .contact-desc {
-    font-size: 0.98rem;
-    line-height: 1.7;
-    color: var(--text-mute);
-    max-width: 28rem;
-    margin-bottom: 2.5rem;
-  }
-  .contact-info {
-    display: flex;
-    flex-direction: column;
-  }
-  .contact-row {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 2rem;
-    padding: 1.3rem 0;
-    border-bottom: 1px solid var(--line);
-    align-items: baseline;
-    transition: padding 0.4s var(--ease-quiet);
-  }
-  .contact-row:first-child { border-top: 1px solid var(--line); }
-  .contact-row:hover {
-    padding-left: 0.5rem;
-  }
-  .contact-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-  .contact-value {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 1.05rem;
-    color: var(--text);
-    transition: color 0.3s var(--ease-quiet);
-    position: relative;
-    display: inline-block;
-  }
-  a.contact-value::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--text);
-    transition: width 0.4s var(--ease-quiet);
-  }
-  a.contact-value:hover::after { width: 100%; }
-  @media (max-width: 900px) {
-    .contact { padding: 6rem 1.5rem 4rem; }
-    .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
-    .contact-row { grid-template-columns: 88px 1fr; gap: 1rem; padding: 1.1rem 0; }
-    .contact-value { font-size: 0.95rem; }
-  }
-
-  /* ==============================================
-     TOMBOL CTA MAGNETIK
-     Tombol dengan efek sapuan, pertukaran teks, dan panah meluncur
-     ============================================== */
-  .cta-kicker {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    font-size: 0.62rem;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-  .cta-kicker::before {
-    content: '';
-    width: 1.5rem;
-    height: 1px;
-    background: var(--text-faint);
-  }
-
-  .cta-magnetic {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 1.4rem;
-    padding: 1.2rem 2.4rem;
-    background: transparent;
-    border: 1px solid var(--text);
-    color: var(--text);
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.9rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    overflow: hidden;
-    transition: color 0.6s var(--ease-quiet), border-color 0.6s var(--ease-quiet);
-    will-change: transform;
-    isolation: isolate;
-    border-radius: var(--radius-sm);
-  }
-
-  /* Sapuan latar belakang pada hover */
-  .cta-magnetic::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--text);
-    transform: translateX(-101%) skewX(-12deg);
-    transition: transform 0.8s var(--ease-emphasis);
-    z-index: -1;
-  }
-  .cta-magnetic:hover::before {
-    transform: translateX(0) skewX(0deg);
-  }
-  .cta-magnetic:hover {
-    color: var(--bg);
-  }
-
-  /* Pertukaran teks dua lapis */
-  .cta-text-wrap {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    line-height: 1.2;
-  }
-  .cta-text,
-  .cta-text-clone {
-    display: block;
-    transition: transform 0.7s var(--ease-emphasis);
-  }
-  .cta-text-clone {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    font-style: italic;
-    font-weight: 200;
-    color: var(--bg);
-    pointer-events: none;
-  }
-  .cta-magnetic:hover .cta-text {
-    transform: translateY(-110%);
-  }
-  .cta-magnetic:hover .cta-text-clone {
-    transform: translateY(-100%);
-  }
-
-  /* Panah meluncur */
-  .cta-arrow {
-    position: relative;
-    width: 30px;
-    height: 12px;
-    overflow: hidden;
-    display: inline-block;
-  }
-  .cta-arrow svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 30px;
-    height: 12px;
-    transition: transform 0.7s var(--ease-emphasis);
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.2;
-  }
-  .cta-arrow svg:nth-child(1) { transform: translateX(0); }
-  .cta-arrow svg:nth-child(2) { transform: translateX(-110%); }
-  .cta-magnetic:hover .cta-arrow svg:nth-child(1) { transform: translateX(110%); }
-  .cta-magnetic:hover .cta-arrow svg:nth-child(2) { transform: translateX(0); }
-
-  /* Varian ukuran besar */
-  .cta-magnetic.cta-large {
-    padding: 1.6rem 3.2rem;
-    font-size: 1.05rem;
-    letter-spacing: 0.25em;
-  }
-  .cta-magnetic.cta-large .cta-arrow {
-    width: 38px;
-    height: 14px;
-  }
-  .cta-magnetic.cta-large .cta-arrow svg {
-    width: 38px;
-    height: 14px;
-  }
-
-  .cta-magnetic.is-magnetic {
-    transition: color 0.6s var(--ease-quiet), border-color 0.6s var(--ease-quiet), transform 0.3s var(--ease-quiet);
-  }
-
-  /* Mikro CTA */
-  .cta-micro {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.72rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    padding: 0.5rem 0;
-    transition: color 0.3s var(--ease-quiet);
-    position: relative;
-  }
-  .cta-micro::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--text);
-    transition: width 0.4s var(--ease-quiet);
-  }
-  .cta-micro:hover { color: var(--text); }
-  .cta-micro:hover::after { width: 100%; }
-  .cta-micro svg {
-    width: 14px;
-    height: 8px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.2;
-    transition: transform 0.4s var(--ease-quiet);
-  }
-  .cta-micro:hover svg { transform: translateX(4px); }
-
-  @media (max-width: 768px) {
-    .cta-magnetic {
-      padding: 1.05rem 2rem;
-      font-size: 0.8rem;
-      gap: 1rem;
-      letter-spacing: 0.18em;
-    }
-    .cta-magnetic.cta-large {
-      padding: 1.3rem 2.4rem;
-      font-size: 0.95rem;
-    }
-  }
-
-  /* ==============================================
-     SAKLAR LAMPU (TOGGLE TEMA)
-     Komponen interaktif untuk beralih mode terang/gelap
-     ============================================== */
-  .lamp-section {
-    padding: 8rem 2.5rem;
-    border-top: 1px solid var(--line);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .lamp-container {
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.6rem;
-    position: relative;
-    z-index: 2;
-  }
-  .lamp-eyebrow {
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-  }
-  .lamp-title {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    line-height: 1;
-    letter-spacing: -0.01em;
-  }
-  .lamp-title .italic {
-    font-style: italic;
-    color: var(--text-mute);
-  }
-  .lamp-desc {
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--text-mute);
-    max-width: 28rem;
-  }
-  .lamp-switch-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.2rem;
-    margin: 2rem 0 1rem;
-  }
-  .lamp-label {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: 0.76rem;
-    letter-spacing: 0.45em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    transition: color 0.4s var(--ease-quiet), opacity 0.4s var(--ease-quiet);
-    opacity: 0.4;
-  }
-  .lamp-label.is-active {
-    color: var(--text);
-    opacity: 1;
-  }
-  .lamp-switch {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    position: relative;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .lamp-switch:focus-visible .lamp-track {
-    box-shadow: 0 0 0 3px var(--text-faint);
-  }
-  .lamp-track {
-    width: 84px;
-    height: 230px;
-    background: var(--bg-card);
-    border-radius: 42px;
-    position: relative;
-    padding: 9px;
-    transition: background 0.6s var(--ease-quiet), border-color 0.6s var(--ease-quiet), box-shadow 0.4s var(--ease-quiet);
-    border: 1px solid var(--line);
-  }
-  .lamp-track-marks {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: center;
-    pointer-events: none;
-  }
-  .lamp-track-marks span {
-    width: 22px;
-    height: 1px;
-    background: var(--text-faint);
-    opacity: 0.3;
-  }
-  .lamp-handle {
-    width: 66px;
-    height: 66px;
-    background: var(--text);
-    border-radius: 50%;
-    position: absolute;
-    left: 50%;
-    top: 9px;
-    transform: translateX(-50%);
-    transition: top 0.7s var(--ease-emphasis), background 0.6s var(--ease-quiet), box-shadow 0.6s var(--ease-quiet);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--handle-shadow);
-  }
-  [data-theme="dark"] .lamp-handle {
-    top: calc(100% - 75px);
-  }
-  .lamp-handle-inner {
-    width: 18px;
-    height: 18px;
-    border: 1px solid var(--bg);
-    border-radius: 50%;
-    opacity: 0.4;
-    transition: opacity 0.4s var(--ease-quiet);
-  }
-  [data-theme="dark"] .lamp-handle-inner {
-    opacity: 0.8;
-    box-shadow: 0 0 12px rgba(242, 237, 231, 0.5);
-  }
-  .lamp-status {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-    font-size: 0.8rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-mute);
-    margin-top: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-  .lamp-status::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text);
-    display: inline-block;
-  }
-  [data-theme="dark"] .lamp-status::before {
-    box-shadow: 0 0 10px var(--text);
-  }
-  .lamp-watermark {
-    position: absolute;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 200;
-    font-size: clamp(8rem, 18vw, 16rem);
-    color: var(--text);
-    opacity: 0.03;
-    pointer-events: none;
-    user-select: none;
-    letter-spacing: -0.02em;
-    z-index: 0;
-    line-height: 0.85;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    white-space: nowrap;
-  }
-  @media (max-width: 768px) {
-    .lamp-section { padding: 5rem 1.5rem; }
-    .lamp-track { width: 72px; height: 190px; border-radius: 36px; padding: 8px; }
-    .lamp-handle { width: 56px; height: 56px; }
-    [data-theme="dark"] .lamp-handle { top: calc(100% - 64px); }
-    .lamp-handle-inner { width: 16px; height: 16px; }
-    .lamp-track-marks span { width: 18px; }
-    .lamp-switch-wrapper { gap: 1rem; margin: 1.5rem 0 0.5rem; }
-    .lamp-container { gap: 1.3rem; }
-  }
-
-  /* ==============================================
-     TOMBOL KEMBALI KE ATAS
-     Muncul setelah melewati hero
-     ============================================== */
-  .back-to-top {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--line);
-    background: color-mix(in srgb, var(--bg) 90%, transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 90;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.4s var(--ease-quiet);
-    border-radius: 50%;
-  }
-  .back-to-top.is-visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-  .back-to-top:hover {
-    border-color: var(--text);
-    transform: translateY(-3px);
-  }
-  .back-to-top svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  @media (max-width: 768px) {
-    .back-to-top {
-      bottom: 1.5rem;
-      right: 1.5rem;
-      width: 40px;
-      height: 40px;
-    }
-  }
-
-  /* ==============================================
-     FOOTER
-     ============================================== */
-  .footer {
-    padding: 3rem 2.5rem;
-    border-top: 1px solid var(--line);
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 2rem;
-    align-items: center;
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-  .footer-center {
-    text-align: center;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 300;
-  }
-  .footer-right { text-align: right; }
-  @media (max-width: 768px) {
-    .footer {
-      grid-template-columns: 1fr;
-      text-align: center;
-      gap: 0.7rem;
-      padding: 2rem 1.5rem;
-    }
-    .footer-right { text-align: center; }
-  }
-
-  /* ==============================================
-     ANIMASI FADE-UP
-     ============================================== */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 1.2s var(--ease-quiet), transform 1.2s var(--ease-quiet);
-    will-change: transform, opacity;
-  }
-  .fade-up.is-in {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* ==============================================
-     REDUKSI GERAK
-     Menghormati preferensi pengguna untuk mengurangi animasi
-     ============================================== */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-    .line { transform: none !important; }
-    .fade-up { opacity: 1; transform: none; }
-    .noise-overlay { animation: none; }
-    .marquee-track { animation: none; }
-    .preloader { display: none; }
-  }
-</style>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>David Firdaus — Web Developer & UI Designer | Portofolio 2026</title>
+<meta name=description content="Portofolio David Firdaus, Web Developer & UI Designer dari Indonesia. Berpengalaman membangun website modern dengan PHP, MySQL, JavaScript, API, dan Cloudflare. Proyek unggulan: DF Komik, DF Bank, DF Links, DF University.">
+<meta name=keywords content="David Firdaus, Web Developer, UI Designer, Portofolio, PHP, MySQL, JavaScript, Cloudflare, Telegram Bot, Indonesia, DF Komik, DF Bank, DF Links, DF University">
+<meta name=author content="David Firdaus">
+<meta name=robots content="index, follow">
+<meta property=og:type content=website>
+<meta property=og:title content="David Firdaus — Web Developer & UI Designer">
+<meta property=og:description content="Portofolio personal David Firdaus. Membangun pengalaman digital yang berkesan dengan teknologi web modern.">
+<meta property=og:locale content=id_ID>
+<meta name=twitter:card content=summary>
+<meta name=twitter:title content="David Firdaus — Web Developer & UI Designer">
+<meta name=twitter:description content="Portofolio personal David Firdaus. Membangun pengalaman digital yang berkesan.">
+<link rel=icon type=image/png href=favicon.png>
+<link rel=apple-touch-icon href=favicon.png>
+<link rel=preconnect href=https://fonts.googleapis.com>
+<link rel=preconnect href=https://fonts.gstatic.com crossorigin>
+<link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;500&family=Roboto:wght@100;300;400&display=swap">
+<script src=https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js></script>
+<style>:root{--bg:#f2ede7;--bg-soft:rgba(255, 255, 255, 0.35);--bg-card:rgba(255, 255, 255, 0.4);--text:#161616;--text-emp:#2a2a2a;--text-mute:#535353;--text-faint:#9a948c;--line:#ddd6cc;--inverse:#ffffff;--tontonan-bg:#1a1a1a;--tontonan-border:rgba(255, 255, 255, 0.1);--noise-opacity:0.035;--handle-shadow:0 4px 20px rgba(0, 0, 0, 0.15);--card-shadow-hover:0 8px 40px rgba(0, 0, 0, 0.08);--radius-sm:2px;--ease-quiet:cubic-bezier(.22, 1, .36, 1);--ease-emphasis:cubic-bezier(.16, 1, .3, 1);--nav-height:72px}[data-theme=dark]{--bg:#141414;--bg-soft:rgba(255, 255, 255, 0.035);--bg-card:rgba(255, 255, 255, 0.04);--text:#f2ede7;--text-emp:#e0dbd4;--text-mute:#a8a39d;--text-faint:#6e6963;--line:#2a2a2a;--inverse:#141414;--tontonan-bg:#0a0a0a;--tontonan-border:rgba(255, 255, 255, 0.08);--noise-opacity:0.05;--handle-shadow:0 4px 20px rgba(0, 0, 0, 0.5),0 0 40px rgba(242, 237, 231, 0.12);--card-shadow-hover:0 8px 40px rgba(0, 0, 0, 0.5)}*,::after,::before{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:hidden;max-width:100%}body{background:var(--bg);color:var(--text);font-family:Roboto,sans-serif;font-weight:300;line-height:1.6;overflow-x:hidden;max-width:100vw;position:relative;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .6s var(--ease-quiet),color .6s var(--ease-quiet);overflow-wrap:break-word;word-wrap:break-word}a,a:visited{color:inherit;text-decoration:none}@media (pointer:fine){body{cursor:none}a,button{cursor:none}}::selection{background:var(--text);color:var(--bg)}:focus{outline:0}:focus-visible{outline:2px solid var(--text);outline-offset:3px}section[id]{scroll-margin-top:var(--nav-height)}.noise-overlay{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:var(--noise-opacity);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");animation:noise 18s steps(8) infinite;transition:opacity .6s var(--ease-quiet)}@keyframes noise{0%,100%{transform:translate(0,0)}20%{transform:translate(-10%,5%)}50%{transform:translate(5%,-10%)}80%{transform:translate(-15%,0)}}.preloader{position:fixed;inset:0;z-index:10001;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .8s var(--ease-quiet),visibility .8s var(--ease-quiet)}.preloader.is-loaded{opacity:0;visibility:hidden}.preloader-content{text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.5rem}.preloader-name{font-family:Oswald,sans-serif;font-weight:300;font-size:clamp(1rem, 3vw, 1.4rem);letter-spacing:.4em;text-transform:uppercase;color:var(--text)}.preloader-bar{width:200px;height:1px;background:var(--line);overflow:hidden;position:relative}.preloader-fill{position:absolute;inset:0;background:var(--text);transform-origin:left;animation:preloaderFill 1.4s var(--ease-emphasis) forwards}@keyframes preloaderFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}.preloader-meta{font-family:Roboto,sans-serif;font-weight:400;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-faint)}.scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--text);z-index:101;width:0%;transition:width 80ms linear}.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:10000;opacity:0;transition:opacity .25s ease-out;will-change:transform;mix-blend-mode:difference}.cursor-dot{width:6px;height:6px;background:rgba(255,255,255,.9);border-radius:50%}.cursor-ring{width:36px;height:36px;border:1px solid rgba(255,255,255,.5);border-radius:50%;transition:opacity .25s ease-out,width .35s var(--ease-quiet),height .35s var(--ease-quiet)}.cursor-dot.is-visible,.cursor-ring.is-visible{opacity:1}@media (pointer:coarse){.cursor-dot,.cursor-ring{display:none}}.nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-height);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);transition:background .6s var(--ease-quiet),border-color .6s var(--ease-quiet)}.nav-logo{font-family:Oswald,sans-serif;font-weight:300;font-size:.95rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text);white-space:nowrap}.nav-logo span{color:var(--text-faint)}.nav-menu{display:flex;gap:2.5rem;list-style:none}.nav-menu a{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);transition:color .3s var(--ease-quiet);position:relative;padding:.3rem 0}.nav-menu a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--text);transition:width .4s var(--ease-quiet)}.nav-menu a.is-active,.nav-menu a:hover{color:var(--text)}.nav-menu a.is-active::after,.nav-menu a:hover::after{width:100%}.nav-actions{display:flex;align-items:center;gap:1.5rem}.nav-meta{font-family:Oswald,sans-serif;font-weight:200;font-size:.72rem;letter-spacing:.2em;color:var(--text-faint);text-transform:uppercase;white-space:nowrap}.theme-toggle{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:0 0;color:var(--text);transition:border-color .4s var(--ease-quiet),transform .4s var(--ease-quiet)}.theme-toggle:hover{border-color:var(--text);transform:rotate(15deg)}.theme-toggle svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}[data-theme=light] .theme-toggle .icon-moon{display:block}[data-theme=light] .theme-toggle .icon-sun{display:none}[data-theme=dark] .theme-toggle .icon-sun{display:block}[data-theme=dark] .theme-toggle .icon-moon{display:none}.nav-toggle{display:none;flex-direction:column;gap:6px;background:0 0;border:none;padding:8px;z-index:101;color:var(--text)}.nav-toggle span{width:26px;height:1px;background:var(--text);transition:all .4s var(--ease-quiet);display:block}.nav-toggle.is-open span:first-child{transform:translateY(3.5px) rotate(45deg)}.nav-toggle.is-open span:nth-child(2){transform:translateY(-3.5px) rotate(-45deg)}.nav-overlay{position:fixed;inset:0;background:var(--bg);z-index:99;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .5s var(--ease-quiet),visibility .5s var(--ease-quiet)}.nav-overlay.is-open{opacity:1;visibility:visible}.nav-overlay ul{list-style:none;text-align:center}.nav-overlay li{margin:1.5rem 0;overflow:hidden;opacity:0;transform:translateY(30px);transition:opacity .5s var(--ease-quiet),transform .5s var(--ease-quiet)}.nav-overlay.is-open li{opacity:1;transform:translateY(0)}.nav-overlay.is-open li:first-child{transition-delay:0.1s}.nav-overlay.is-open li:nth-child(2){transition-delay:0.18s}.nav-overlay.is-open li:nth-child(3){transition-delay:0.26s}.nav-overlay.is-open li:nth-child(4){transition-delay:0.34s}.nav-overlay.is-open li:nth-child(5){transition-delay:0.42s}.nav-overlay a{font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(2rem, 8vw, 3rem);color:var(--text);letter-spacing:.02em;display:inline-block;transition:transform .5s var(--ease-quiet),font-style .3s var(--ease-quiet)}.nav-overlay a:hover{transform:translateX(10px);font-style:italic}.nav-overlay a.is-active{font-style:italic;color:var(--text-mute);opacity:.7}@media (max-width:768px){.nav{padding:0 1.5rem}.nav-menu,.nav-meta{display:none}.nav-toggle{display:flex}.nav-actions{gap:1rem}}.hero{min-height:100vh;padding:calc(var(--nav-height) + 4rem) 2.5rem 4rem;display:flex;align-items:center;position:relative;overflow:hidden}.hero-grid{width:100%;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr;gap:5rem;align-items:center}.hero-eyebrow{font-family:Roboto,sans-serif;font-weight:400;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-mute);margin-bottom:2.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;max-width:100%}.hero-eyebrow::before{content:'';width:2.5rem;height:1px;background:var(--text-mute)}.hero-title{font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(2.5rem, 7vw, 7rem);line-height:.98;letter-spacing:-.02em;margin-bottom:2.2rem}.line-mask{overflow:hidden;display:block}.line{transform:translateY(110%);display:block}.hero-title .italic{font-style:italic;font-weight:200;color:var(--text-emp)}.hero-subtitle{font-size:1rem;line-height:1.7;color:var(--text-mute);max-width:32rem;margin-bottom:2.5rem;font-weight:300}.hero-meta{display:grid;grid-template-columns:repeat(3,auto);gap:3rem;padding-top:2rem;border-top:1px solid var(--line);max-width:32rem}.hero-meta>div{display:flex;flex-direction:column;gap:.4rem}.hero-meta span{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}.hero-meta strong{font-family:Oswald,sans-serif;font-weight:300;font-size:.88rem;color:var(--text);letter-spacing:.04em}.hero-portrait{aspect-ratio:4/5;width:100%;max-width:400px;margin-left:auto;position:relative;overflow:hidden;border-radius:var(--radius-sm);padding:14px;border:1px solid var(--line);background:var(--bg);box-shadow:0 15px 40px rgba(0,0,0,.06)}.hero-image{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s var(--ease-quiet);border-radius:2px}.hero-portrait:hover .hero-image{transform:scale(1.04)}.hero-portrait .photo-placeholder{height:100%}.hero-cta-wrap{margin-top:2.5rem;display:flex;flex-direction:column;align-items:flex-start;gap:1rem}.hero-scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.8rem;opacity:.5}.hero-scroll-cue span{font-family:Oswald,sans-serif;font-weight:200;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-faint)}.hero-scroll-cue-line{width:1px;height:40px;background:var(--text-faint);position:relative;overflow:hidden}.hero-scroll-cue-line::after{content:'';position:absolute;top:0;left:0;width:100%;height:50%;background:var(--bg);animation:scrollLine 2s var(--ease-quiet) infinite}@keyframes scrollLine{0%{transform:translateY(-100%)}100%{transform:translateY(200%)}}@media (max-width:900px){.hero{padding:calc(var(--nav-height) + 2rem) 1.5rem 3rem;min-height:auto}.hero-grid{grid-template-columns:1fr;gap:2.5rem}.hero-portrait{max-width:300px;margin:0 auto;order:-1}.hero-meta{grid-template-columns:1fr 1fr;gap:1.5rem}.hero-eyebrow{margin-bottom:1.5rem}.hero-title{margin-bottom:1.5rem}.hero-subtitle{margin-bottom:2rem}.hero-cta-wrap{margin-top:1.5rem}.hero-scroll-cue{display:none}}.photo-placeholder{width:100%;height:100%;min-height:280px;border:1px dashed var(--text-faint);background:var(--bg-soft);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.85rem;text-align:center;padding:2rem;position:relative;transition:all .5s var(--ease-quiet);border-radius:var(--radius-sm)}.photo-placeholder::after,.photo-placeholder::before{content:'';position:absolute;width:12px;height:12px;border:1px solid var(--text-faint)}.photo-placeholder::before{top:.75rem;left:.75rem;border-right:none;border-bottom:none}.photo-placeholder::after{bottom:.75rem;right:.75rem;border-left:none;border-top:none}.photo-placeholder:hover{border-color:var(--text-mute);background:var(--bg-card)}.placeholder-icon{width:32px;height:32px;color:var(--text-faint);margin-bottom:.5rem;transition:color .4s var(--ease-quiet)}.photo-placeholder:hover .placeholder-icon{color:var(--text-mute)}.placeholder-label{font-family:Oswald,sans-serif;font-weight:300;font-size:.72rem;letter-spacing:.25em;color:var(--text-mute);text-transform:uppercase}.placeholder-hint{font-size:.66rem;letter-spacing:.08em;color:var(--text-faint);line-height:1.5}.marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:1.5rem 0;background:var(--bg-soft);transition:background .6s var(--ease-quiet),border-color .6s var(--ease-quiet)}.marquee:hover .marquee-track{animation-play-state:paused}.marquee-track{display:flex;gap:4rem;animation:marquee 40s linear infinite;white-space:nowrap;width:max-content}.marquee-item{font-family:Oswald,sans-serif;font-weight:200;font-size:1.5rem;letter-spacing:.15em;color:var(--text-emp);text-transform:uppercase;display:flex;align-items:center;gap:4rem}.marquee-item::after{content:'✦';font-size:.9rem;color:var(--text-faint)}@keyframes marquee{to{transform:translateX(-50%)}}@media (max-width:768px){.marquee-item{font-size:1.1rem;gap:2.5rem}.marquee-track{gap:2.5rem}}section{padding:8rem 2.5rem;position:relative}.section-header{max-width:1400px;margin:0 auto 4rem;display:grid;grid-template-columns:auto 1fr auto;gap:3rem;align-items:end;padding-bottom:1.5rem;border-bottom:1px solid var(--line)}.section-number{font-family:Oswald,sans-serif;font-weight:200;font-size:.82rem;letter-spacing:.25em;color:var(--text-faint)}.section-title{font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(2rem, 5vw, 4rem);line-height:1;letter-spacing:-.01em}.section-title .italic{font-style:italic;color:var(--text-mute)}.section-tag{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);text-align:right;white-space:nowrap}.section-desc{max-width:50rem;margin:0 auto 4rem;font-size:1.05rem;color:var(--text-mute);line-height:1.7}@media (max-width:768px){section{padding:5rem 1.5rem}.section-header{grid-template-columns:1fr;gap:1rem;margin-bottom:2.5rem}.section-tag{text-align:left}}.index{padding:5rem 2.5rem;border-bottom:1px solid var(--line)}.index-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:3rem}.index-item{display:flex;flex-direction:column;gap:.6rem;position:relative}.index-item::before{content:'';position:absolute;top:0;left:0;width:0;height:1px;background:var(--text);transition:width .6s var(--ease-quiet)}.index-item.is-in::before{width:2rem}.index-number{font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(2.2rem, 5vw, 3rem);line-height:1;color:var(--text);padding-top:1rem}.index-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute);margin-top:.3rem}.index-desc{font-size:.82rem;color:var(--text-mute);line-height:1.5;margin-top:.5rem}@media (max-width:768px){.index{padding:3.5rem 1.5rem}.index-grid{grid-template-columns:repeat(2,1fr);gap:2rem}}.about-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1.2fr;gap:5rem;align-items:start}.about-photo{aspect-ratio:4/5;position:sticky;top:calc(var(--nav-height) + 2rem);overflow:hidden;border-radius:var(--radius-sm);padding:14px;border:1px solid var(--line);background:var(--bg);box-shadow:0 15px 40px rgba(0,0,0,.06)}.about-image{width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;transition:transform .8s var(--ease-quiet)}.about-photo:hover .about-image{transform:scale(1.04)}.about-content p{font-size:1.05rem;line-height:1.8;color:var(--text-emp);margin-bottom:1.8rem}.about-content p:first-of-type::first-letter{font-family:Oswald,sans-serif;font-weight:200;font-size:4.5rem;float:left;line-height:.85;margin-right:.8rem;margin-top:.3rem;color:var(--text)}.about-content p:last-of-type{color:var(--text-mute);font-size:.95rem}.about-quote{margin:3rem 0;padding:2rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-family:Oswald,sans-serif;font-weight:200;font-style:italic;font-size:clamp(1.2rem, 2.5vw, 1.6rem);line-height:1.4;color:var(--text-emp);position:relative}.about-quote::before{content:'"';position:absolute;top:-.5rem;left:-.5rem;font-size:3rem;color:var(--text-faint);opacity:.3}.about-signature{margin-top:2rem;display:flex;align-items:center;gap:1.5rem}.signature-line{flex:1;height:1px;background:var(--line)}.signature-text{font-family:Oswald,sans-serif;font-weight:300;font-size:.78rem;letter-spacing:.2em;color:var(--text-mute);text-transform:uppercase;white-space:nowrap}@media (max-width:900px){.about-grid{grid-template-columns:1fr;gap:3rem}.about-photo{position:relative;top:0;max-width:340px}.about-content p{font-size:.98rem}.about-quote{font-size:1.2rem;margin:2rem 0;padding:1.5rem 0}.about-content p:first-of-type::first-letter{font-size:3.5rem}}.lang-wrapper{position:relative;display:flex;align-items:center}.lang-btn{display:flex;align-items:center;gap:.5rem;background:0 0;border:1px solid var(--line);border-radius:20px;padding:.4rem .8rem;color:var(--text);font-family:Oswald,sans-serif;font-weight:300;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:border-color .4s var(--ease-quiet),background .4s var(--ease-quiet)}.lang-btn:hover{border-color:var(--text);background:var(--bg-soft)}.lang-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5}.lang-dropdown{position:absolute;top:calc(100% + .5rem);right:0;background:var(--bg);border:1px solid var(--line);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.08);min-width:140px;padding:.5rem 0;opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .3s var(--ease-quiet),transform .3s var(--ease-quiet),visibility .3s;z-index:200}.lang-dropdown.is-open{opacity:1;visibility:visible;transform:translateY(0)}.lang-option{display:block;width:100%;text-align:left;background:0 0;border:none;padding:.6rem 1.2rem;color:var(--text-mute);font-family:Roboto,sans-serif;font-weight:300;font-size:.8rem;cursor:pointer;transition:background .2s ease,color .2s ease}.lang-option:hover{background:var(--bg-soft);color:var(--text)}.lang-option.is-active{color:var(--text);font-weight:400}@media (max-width:480px){.about-content{display:flow-root}.about-content p:first-of-type::first-letter{font-size:3rem;margin-right:.5rem}.about-signature{flex-direction:column;align-items:flex-start;gap:.5rem}.signature-line{width:100%}.nav-actions{gap:.5rem}.lang-btn{padding:.3rem .6rem;font-size:.6rem}.nav-meta{display:none}}.translating{transition:opacity .2s ease!important;opacity:.3}.expertise-list{max-width:1400px;margin:0 auto}.expertise-item{display:grid;grid-template-columns:60px 1fr 1.5fr 120px;gap:3rem;padding:2.2rem 0;border-bottom:1px solid var(--line);align-items:center;transition:padding .5s var(--ease-quiet),background .5s var(--ease-quiet);position:relative;cursor:default}.expertise-item:first-child{border-top:1px solid var(--line)}.expertise-item:hover{padding-left:1.5rem;padding-right:1.5rem;background:var(--bg-soft)}.expertise-num{font-family:Oswald,sans-serif;font-weight:200;font-size:.95rem;color:var(--text-faint);letter-spacing:.1em}.expertise-name{font-family:Oswald,sans-serif;font-weight:300;font-size:clamp(1.3rem, 2vw, 1.6rem);letter-spacing:.01em;transition:transform .4s var(--ease-quiet)}.expertise-item:hover .expertise-name{transform:translateX(8px)}.expertise-desc{font-size:.86rem;color:var(--text-mute);line-height:1.6}.expertise-year{font-family:Oswald,sans-serif;font-weight:200;font-size:.82rem;color:var(--text-faint);letter-spacing:.15em;text-align:right;text-transform:uppercase}@media (max-width:900px){.expertise-item{grid-template-columns:36px 1fr;gap:1rem;padding:1.6rem 0}.expertise-item:hover{padding-left:.5rem;padding-right:.5rem}.expertise-num{font-size:.82rem}.expertise-name{font-size:1.2rem}.expertise-item:hover .expertise-name{transform:none}.expertise-desc,.expertise-year{grid-column:2;text-align:left}.expertise-year{font-size:.72rem;margin-top:.4rem}}.works-section{padding:0}.works-header{padding:8rem 2.5rem 4rem;max-width:1400px;margin:0 auto}.works-carousel-wrapper{position:relative;padding:2rem 0 6rem;overflow:hidden}.works-carousel{position:relative;width:100%;max-width:1200px;height:65vh;max-height:560px;margin:0 auto;perspective:1600px}.work-card{position:absolute;top:50%;left:50%;width:360px;max-width:85%;height:100%;transform:translate(-50%,-50%) scale(.75);opacity:0;transition:all .7s cubic-bezier(.22, 1, .36, 1);pointer-events:none;z-index:1;display:flex;flex-direction:column;background:var(--bg-card);border:1px solid var(--line);padding:1.5rem;border-radius:var(--radius-sm);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.work-card.is-active{transform:translate(-50%,-50%) scale(1) translateZ(0);opacity:1;z-index:3;pointer-events:auto;box-shadow:var(--card-shadow-hover);border-color:var(--text-mute)}.work-card.is-prev{transform:translate(-135%,-50%) scale(.8) rotateY(25deg);opacity:.4;z-index:2}.work-card.is-next{transform:translate(35%,-50%) scale(.8) rotateY(-25deg);opacity:.4;z-index:2}.work-card-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;font-family:Oswald,sans-serif;font-weight:300;font-size:.72rem;letter-spacing:.2em;color:var(--text-mute);text-transform:uppercase}.work-card-image{flex:1;margin-bottom:1.2rem;overflow:hidden;position:relative;border-radius:var(--radius-sm)}.work-card-img{width:100%;height:100%;object-fit:contain;background-color:rgba(0,0,0,.04);display:block;transition:transform .6s var(--ease-quiet)}.work-card.is-active:hover .work-card-img{transform:scale(1.05)}.work-card-title{font-family:Oswald,sans-serif;font-weight:300;font-size:1.35rem;line-height:1.15;margin-bottom:.5rem}.work-card-tag{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-faint)}.works-nav{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-top:3rem}.works-nav-btn{width:44px;height:44px;border:1px solid var(--line);background:0 0;border-radius:50%;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s var(--ease-quiet)}.works-nav-btn:hover{border-color:var(--text);background:var(--bg-soft);transform:scale(1.05)}.works-nav-btn svg{width:18px;height:18px}.works-dots{display:flex;gap:.8rem}.work-dot{width:8px;height:8px;border-radius:50%;background:var(--line);border:none;cursor:pointer;transition:all .3s var(--ease-quiet);padding:0}.work-dot.is-active{background:var(--text);width:24px;border-radius:4px}@media (max-width:768px){.works-header{padding:5rem 1.5rem 2rem}.works-carousel{width:95%;height:480px}.work-card{width:85%;padding:1.2rem}.work-card.is-prev{transform:translate(-125%,-50%) scale(.75) rotateY(20deg);opacity:.3}.work-card.is-next{transform:translate(25%,-50%) scale(.75) rotateY(-20deg);opacity:.3}.works-nav{margin-top:2rem;gap:1rem}}@media (max-width:480px){.work-card{padding:1rem}.work-card-title{font-size:1.15rem}.work-card.is-prev{transform:translate(-115%,-50%) scale(.7) rotateY(15deg);opacity:.3}.work-card.is-next{transform:translate(15%,-50%) scale(.7) rotateY(-15deg);opacity:.3}}.gallery-section{padding:8rem 2.5rem;background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .6s var(--ease-quiet),border-color .6s var(--ease-quiet)}.gallery-grid{max-width:1600px;margin:0 auto;display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:80px;gap:1rem}.gallery-tile{position:relative;overflow:hidden;transition:transform .7s var(--ease-emphasis),opacity .7s var(--ease-emphasis);transform-origin:center center;border-radius:var(--radius-sm)}.gallery-tile.t1{grid-column:span 5;grid-row:span 5}.gallery-tile.t2{grid-column:span 4;grid-row:span 3}.gallery-tile.t3{grid-column:span 3;grid-row:span 4}.gallery-tile.t4{grid-column:span 4;grid-row:span 4}.gallery-tile.t5{grid-column:span 3;grid-row:span 3}.gallery-tile.t6{grid-column:span 5;grid-row:span 4}.gallery-grid.has-hover .gallery-tile:not(:hover){transform:scale(.97);opacity:.4}.gallery-tile:hover{transform:scale(1.02)}.gallery-tile .photo-placeholder{height:100%;min-height:0;transition:transform .6s var(--ease-quiet)}.gallery-tile:hover .photo-placeholder{transform:scale(1.05)}.gallery-tile-label{position:absolute;bottom:1rem;left:1rem;font-family:Oswald,sans-serif;font-weight:300;font-size:.68rem;letter-spacing:.2em;color:var(--text);background:color-mix(in srgb,var(--bg) 92%,transparent);padding:.4rem .8rem;text-transform:uppercase;opacity:0;transform:translateY(8px);transition:all .4s var(--ease-quiet);border-radius:var(--radius-sm);backdrop-filter:blur(4px)}.gallery-tile:hover .gallery-tile-label{opacity:1;transform:translateY(0)}@media (max-width:900px){.gallery-section{padding:5rem 1.5rem}.gallery-grid{grid-template-columns:repeat(6,1fr);grid-auto-rows:60px;gap:.5rem}.gallery-tile.t1{grid-column:span 6;grid-row:span 4}.gallery-tile.t2{grid-column:span 3;grid-row:span 3}.gallery-tile.t3{grid-column:span 3;grid-row:span 3}.gallery-tile.t4{grid-column:span 6;grid-row:span 3}.gallery-tile.t5{grid-column:span 3;grid-row:span 3}.gallery-tile.t6{grid-column:span 3;grid-row:span 3}.gallery-grid.has-hover .gallery-tile:not(:hover){transform:scale(1);opacity:1}.gallery-tile:hover{transform:scale(1)}.gallery-tile:hover .photo-placeholder{transform:none}.gallery-tile-label{opacity:1;transform:translateY(0);font-size:.62rem}}.tontonan{padding:8rem 2.5rem;background:var(--tontonan-bg);color:var(--inverse)}.tontonan .section-header{border-bottom-color:var(--tontonan-border)}.tontonan .section-number,.tontonan .section-tag{color:rgba(255,255,255,.5)}.tontonan .section-title{color:var(--inverse)}.tontonan .section-title .italic{color:rgba(255,255,255,.55)}.video-feature{max-width:1400px;margin:0 auto 5rem}.video-frame{aspect-ratio:16/9;width:100%;position:relative;overflow:hidden;background:#050505;border-radius:var(--radius-sm);box-shadow:0 10px 30px rgba(0,0,0,.4);transition:box-shadow .4s var(--ease-quiet)}.video-card:hover .video-frame,.video-feature:hover .video-frame{box-shadow:0 15px 45px rgba(0,0,0,.5)}.video-frame iframe{width:100%;height:100%;border:0;display:block;position:absolute;top:0;left:0;z-index:1}.video-frame::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;border-top:42px solid var(--tontonan-bg);border-bottom:42px solid var(--tontonan-bg);border-left:8px solid var(--tontonan-bg);border-right:8px solid var(--tontonan-bg);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);border-radius:var(--radius-sm)}.video-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;padding:2rem;position:relative;border:1px dashed rgba(255,255,255,.2);background:rgba(255,255,255,.02);transition:all .5s var(--ease-quiet)}.video-placeholder:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.05)}.video-placeholder::after,.video-placeholder::before{content:'';position:absolute;width:14px;height:14px;border:1px solid rgba(255,255,255,.4)}.video-placeholder::before{top:.75rem;left:.75rem;border-right:none;border-bottom:none}.video-placeholder::after{bottom:.75rem;right:.75rem;border-left:none;border-top:none}.play-icon{width:56px;height:56px;border:1px solid rgba(255,255,255,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.5rem;transition:all .4s var(--ease-quiet)}.video-placeholder:hover .play-icon{border-color:rgba(255,255,255,.8);transform:scale(1.08);background:rgba(255,255,255,.08)}.play-icon svg{width:18px;height:18px;fill:rgba(255,255,255,0.8);margin-left:3px}.video-placeholder .placeholder-label{color:rgba(255,255,255,.85)}.video-placeholder .placeholder-hint{color:rgba(255,255,255,.45);max-width:24rem}.video-feature-meta{display:grid;grid-template-columns:auto 1fr auto;gap:3rem;align-items:end;margin-top:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--tontonan-border)}.video-feature-num{font-family:Oswald,sans-serif;font-weight:200;font-size:.78rem;letter-spacing:.25em;color:rgba(255,255,255,.5)}.video-feature-title{font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(1.5rem, 3vw, 2.3rem);line-height:1.1;color:var(--inverse)}.video-feature-title .italic{font-style:italic;color:rgba(255,255,255,.55)}.video-feature-duration{font-family:Oswald,sans-serif;font-weight:300;font-size:.82rem;letter-spacing:.2em;color:rgba(255,255,255,.6)}.video-list{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}.video-card{display:flex;flex-direction:column;transition:transform .4s var(--ease-quiet)}.video-card:hover{transform:translateY(-4px)}.video-card .video-frame{aspect-ratio:4/3}.video-card-meta{margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--tontonan-border)}.video-card-header{display:flex;justify-content:space-between;margin-bottom:.8rem;font-family:Oswald,sans-serif;font-weight:300;font-size:.68rem;letter-spacing:.2em;color:rgba(255,255,255,.55)}.video-card-title{font-family:Oswald,sans-serif;font-weight:300;font-size:1.2rem;line-height:1.2;color:var(--inverse);margin-bottom:.6rem;transition:color .3s var(--ease-quiet)}.video-card:hover .video-card-title{color:rgba(255,255,255,.8)}.video-card-desc{font-size:.83rem;color:rgba(255,255,255,.5);line-height:1.5}@media (max-width:900px){.tontonan{padding:5rem 1.5rem}.video-list{grid-template-columns:1fr;gap:2.5rem}.video-feature{margin-bottom:3rem}.video-feature-meta{grid-template-columns:1fr;gap:.8rem}.video-card-title{font-size:1.1rem}}.philosophy{padding:10rem 2.5rem;text-align:center;overflow:hidden;position:relative}.philosophy-quote{max-width:1100px;margin:0 auto;font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(1.5rem, 4vw, 3.2rem);line-height:1.2;letter-spacing:-.01em;position:relative;z-index:1}.philosophy-quote .italic{font-style:italic;color:var(--text-mute)}.philosophy-attribute{margin-top:3rem;font-family:Oswald,sans-serif;font-weight:300;font-size:.78rem;letter-spacing:.3em;color:var(--text-faint);text-transform:uppercase}.watermark{position:absolute;font-family:Oswald,sans-serif;font-weight:200;font-size:20vw;line-height:.85;color:var(--text);opacity:.04;pointer-events:none;user-select:none;letter-spacing:-.02em;z-index:0}.watermark-right{right:-2rem;bottom:-3rem}@media (max-width:768px){.philosophy{padding:6rem 1.5rem}.philosophy-attribute{margin-top:2rem}}.contact{padding:8rem 2.5rem 6rem;border-top:1px solid var(--line)}.contact-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}.contact-eyebrow{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-mute);margin-bottom:2rem}.contact-title{font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(2.2rem, 6vw, 5rem);line-height:.98;letter-spacing:-.02em;margin-bottom:2rem}.contact-title .italic{font-style:italic;color:var(--text-mute)}.contact-desc{font-size:.98rem;line-height:1.7;color:var(--text-mute);max-width:28rem;margin-bottom:2.5rem}.contact-info{display:flex;flex-direction:column}.contact-row{display:grid;grid-template-columns:100px 1fr;gap:2rem;padding:1.3rem 0;border-bottom:1px solid var(--line);align-items:baseline;transition:padding .4s var(--ease-quiet)}.contact-row:first-child{border-top:1px solid var(--line)}.contact-row:hover{padding-left:.5rem}.contact-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}.contact-value{font-family:Oswald,sans-serif;font-weight:300;font-size:1.05rem;color:var(--text);transition:color .3s var(--ease-quiet);position:relative;display:inline-block}a.contact-value::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--text);transition:width .4s var(--ease-quiet)}a.contact-value:hover::after{width:100%}@media (max-width:900px){.contact{padding:6rem 1.5rem 4rem}.contact-grid{grid-template-columns:1fr;gap:3rem}.contact-row{grid-template-columns:88px 1fr;gap:1rem;padding:1.1rem 0}.contact-value{font-size:.95rem}}.cta-kicker{font-family:Roboto,sans-serif;font-weight:400;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--text-faint);display:flex;align-items:center;gap:.8rem}.cta-kicker::before{content:'';width:1.5rem;height:1px;background:var(--text-faint)}.cta-magnetic{position:relative;display:inline-flex;align-items:center;gap:1.4rem;padding:1.2rem 2.4rem;background:0 0;border:1px solid var(--text);color:var(--text);font-family:Oswald,sans-serif;font-weight:300;font-size:.9rem;letter-spacing:.22em;text-transform:uppercase;overflow:hidden;transition:color .6s var(--ease-quiet),border-color .6s var(--ease-quiet);will-change:transform;isolation:isolate;border-radius:var(--radius-sm)}.cta-magnetic::before{content:'';position:absolute;inset:0;background:var(--text);transform:translateX(-101%) skewX(-12deg);transition:transform .8s var(--ease-emphasis);z-index:-1}.cta-magnetic:hover::before{transform:translateX(0) skewX(0)}.cta-magnetic:hover{color:var(--bg)}.cta-text-wrap{position:relative;overflow:hidden;display:inline-block;line-height:1.2}.cta-text,.cta-text-clone{display:block;transition:transform .7s var(--ease-emphasis)}.cta-text-clone{position:absolute;top:100%;left:0;font-style:italic;font-weight:200;color:var(--bg);pointer-events:none}.cta-magnetic:hover .cta-text{transform:translateY(-110%)}.cta-magnetic:hover .cta-text-clone{transform:translateY(-100%)}.cta-arrow{position:relative;width:30px;height:12px;overflow:hidden;display:inline-block}.cta-arrow svg{position:absolute;top:0;left:0;width:30px;height:12px;transition:transform .7s var(--ease-emphasis);stroke:currentColor;fill:none;stroke-width:1.2}.cta-arrow svg:first-child{transform:translateX(0)}.cta-arrow svg:nth-child(2){transform:translateX(-110%)}.cta-magnetic:hover .cta-arrow svg:first-child{transform:translateX(110%)}.cta-magnetic:hover .cta-arrow svg:nth-child(2){transform:translateX(0)}.cta-magnetic.cta-large{padding:1.6rem 3.2rem;font-size:1.05rem;letter-spacing:.25em}.cta-magnetic.cta-large .cta-arrow{width:38px;height:14px}.cta-magnetic.cta-large .cta-arrow svg{width:38px;height:14px}.cta-magnetic.is-magnetic{transition:color .6s var(--ease-quiet),border-color .6s var(--ease-quiet),transform .3s var(--ease-quiet)}.cta-micro{display:inline-flex;align-items:center;gap:.6rem;font-family:Oswald,sans-serif;font-weight:300;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text-mute);padding:.5rem 0;transition:color .3s var(--ease-quiet);position:relative}.cta-micro::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--text);transition:width .4s var(--ease-quiet)}.cta-micro:hover{color:var(--text)}.cta-micro:hover::after{width:100%}.cta-micro svg{width:14px;height:8px;stroke:currentColor;fill:none;stroke-width:1.2;transition:transform .4s var(--ease-quiet)}.cta-micro:hover svg{transform:translateX(4px)}@media (max-width:768px){.cta-magnetic{padding:1.05rem 2rem;font-size:.8rem;gap:1rem;letter-spacing:.18em}.cta-magnetic.cta-large{padding:1.3rem 2.4rem;font-size:.95rem}}.cta-download{display:inline-flex;align-items:center;gap:.6rem;font-family:Oswald,sans-serif;font-weight:300;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text-mute);padding:.75rem 1.4rem;border:1px solid var(--line);border-radius:var(--radius-sm);background:0 0;transition:color .3s var(--ease-quiet),border-color .3s var(--ease-quiet),background .3s var(--ease-quiet);text-decoration:none;margin-top:.5rem}.cta-download:hover{color:var(--text);border-color:var(--text);background:var(--bg-soft)}.cta-download svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:transform .4s var(--ease-quiet)}.cta-download:hover svg{transform:translateY(2px)}@media (max-width:480px){.cta-download{font-size:.66rem;padding:.7rem 1.2rem;letter-spacing:.18em}}.lamp-section{padding:8rem 2.5rem;border-top:1px solid var(--line);display:flex;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden}.lamp-container{max-width:600px;display:flex;flex-direction:column;align-items:center;gap:1.6rem;position:relative;z-index:2}.lamp-eyebrow{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-mute)}.lamp-title{font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(2rem, 5vw, 3.5rem);line-height:1;letter-spacing:-.01em}.lamp-title .italic{font-style:italic;color:var(--text-mute)}.lamp-desc{font-size:.9rem;line-height:1.7;color:var(--text-mute);max-width:28rem}.lamp-switch-wrapper{display:flex;flex-direction:column;align-items:center;gap:1.2rem;margin:2rem 0 1rem}.lamp-label{font-family:Oswald,sans-serif;font-weight:200;font-size:.76rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);transition:color .4s var(--ease-quiet),opacity .4s var(--ease-quiet);opacity:.4}.lamp-label.is-active{color:var(--text);opacity:1}.lamp-switch{background:0 0;border:none;padding:0;cursor:pointer;position:relative;outline:0;-webkit-tap-highlight-color:transparent}.lamp-switch:focus-visible .lamp-track{box-shadow:0 0 0 3px var(--text-faint)}.lamp-track{width:84px;height:230px;background:var(--bg-card);border-radius:42px;position:relative;padding:9px;transition:background .6s var(--ease-quiet),border-color .6s var(--ease-quiet),box-shadow .4s var(--ease-quiet);border:1px solid var(--line)}.lamp-track-marks{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}.lamp-track-marks span{width:22px;height:1px;background:var(--text-faint);opacity:.3}.lamp-handle{width:66px;height:66px;background:var(--text);border-radius:50%;position:absolute;left:50%;top:9px;transform:translateX(-50%);transition:top .7s var(--ease-emphasis),background .6s var(--ease-quiet),box-shadow .6s var(--ease-quiet);display:flex;align-items:center;justify-content:center;box-shadow:var(--handle-shadow)}[data-theme=dark] .lamp-handle{top:calc(100% - 75px)}.lamp-handle-inner{width:18px;height:18px;border:1px solid var(--bg);border-radius:50%;opacity:.4;transition:opacity .4s var(--ease-quiet)}[data-theme=dark] .lamp-handle-inner{opacity:.8;box-shadow:0 0 12px rgba(242,237,231,.5)}.lamp-status{font-family:Oswald,sans-serif;font-weight:300;font-size:.8rem;letter-spacing:.3em;text-transform:uppercase;color:var(--text-mute);margin-top:.5rem;display:flex;align-items:center;gap:.8rem}.lamp-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--text);display:inline-block}[data-theme=dark] .lamp-status::before{box-shadow:0 0 10px var(--text)}.lamp-watermark{position:absolute;font-family:Oswald,sans-serif;font-weight:200;font-size:clamp(8rem, 18vw, 16rem);color:var(--text);opacity:.03;pointer-events:none;user-select:none;letter-spacing:-.02em;z-index:0;line-height:.85;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap}@media (max-width:768px){.lamp-section{padding:5rem 1.5rem}.lamp-track{width:72px;height:190px;border-radius:36px;padding:8px}.lamp-handle{width:56px;height:56px}[data-theme=dark] .lamp-handle{top:calc(100% - 64px)}.lamp-handle-inner{width:16px;height:16px}.lamp-track-marks span{width:18px}.lamp-switch-wrapper{gap:1rem;margin:1.5rem 0 .5rem}.lamp-container{gap:1.3rem}}.back-to-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;border:1px solid var(--line);background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:90;opacity:0;visibility:hidden;transform:translateY(10px);transition:all .4s var(--ease-quiet);border-radius:50%}.back-to-top.is-visible{opacity:1;visibility:visible;transform:translateY(0)}.back-to-top:hover{border-color:var(--text);transform:translateY(-3px)}.back-to-top svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}@media (max-width:768px){.back-to-top{bottom:1.5rem;right:1.5rem;width:40px;height:40px}}.footer{padding:3rem 2.5rem;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem;align-items:center;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-faint)}.footer-center{text-align:center;font-family:Oswald,sans-serif;font-weight:300}.footer-right{text-align:right}@media (max-width:768px){.footer{grid-template-columns:1fr;text-align:center;gap:.7rem;padding:2rem 1.5rem}.footer-right{text-align:center}}@media (max-width:480px){section{padding:4rem 1.25rem}.hero{padding:calc(var(--nav-height) + 2rem) 1.25rem 2.5rem}.hero-grid{gap:2rem}.hero-portrait{max-width:260px}.hero-meta{grid-template-columns:1fr;gap:1.2rem}.index{padding:3rem 1.25rem}.index-grid{grid-template-columns:1fr;gap:1.8rem}.nav{padding:0 1.25rem}.nav-logo{font-size:.82rem;letter-spacing:.2em}.expertise-item{padding:1.4rem 0;gap:.8rem}.expertise-name{font-size:1.1rem}.contact{padding:4.5rem 1.25rem 3rem}.contact-row{grid-template-columns:80px 1fr;gap:.8rem;padding:1rem 0}.contact-value{font-size:.9rem;word-break:break-all}.footer{padding:1.5rem 1.25rem}.marquee-item{font-size:1rem;gap:2rem}.marquee-track{gap:2rem}.work-card{flex:0 0 260px;height:440px}.gallery-grid{grid-template-columns:1fr;grid-auto-rows:80px}.gallery-tile.t1,.gallery-tile.t2,.gallery-tile.t3,.gallery-tile.t4,.gallery-tile.t5,.gallery-tile.t6{grid-column:span 1}.gallery-tile.t1{grid-row:span 4}.gallery-tile.t2,.gallery-tile.t3,.gallery-tile.t4,.gallery-tile.t5,.gallery-tile.t6{grid-row:span 3}.lamp-title{font-size:1.8rem}.philosophy-quote{font-size:1.3rem}}.fade-up{opacity:0;transform:translateY(40px);transition:opacity 1.2s var(--ease-quiet),transform 1.2s var(--ease-quiet);will-change:transform,opacity}.fade-up.is-in{opacity:1;transform:none}@media (prefers-reduced-motion:reduce){*,::after,::before{animation-duration:0s!important;animation-iteration-count:1!important;transition-duration:0s!important}.line{transform:none!important}.fade-up{opacity:1;transform:none}.noise-overlay{animation:none}.marquee-track{animation:none}.preloader{display:none}}</style>
 </head>
 <body>
-
-<!-- Preloader -->
-<div class="preloader" id="preloader">
-  <div class="preloader-content">
-    <div class="preloader-name">David Firdaus</div>
-    <div class="preloader-bar"><div class="preloader-fill"></div></div>
-    <div class="preloader-meta">Portofolio · 2026</div>
-  </div>
+<div class=preloader id=preloader>
+<div class=preloader-content>
+<div class=preloader-name>David Firdaus</div>
+<div class=preloader-bar><div class=preloader-fill></div></div>
+<div class=preloader-meta>Portofolio · 2026</div>
 </div>
-
-<!-- Overlay noise -->
-<div class="noise-overlay"></div>
-
-<!-- Kursor kustom -->
-<div class="cursor-dot"></div>
-<div class="cursor-ring"></div>
-
-<!-- Indikator progres gulir -->
-<div class="scroll-progress" id="scroll-progress"></div>
-
-<!-- Navigasi -->
-<nav class="nav">
-  <a href="#" class="nav-logo">David Firdaus <span>/ 2026</span></a>
-  <ul class="nav-menu">
-    <li><a href="#about" data-nav-link>Tentang</a></li>
-    <li><a href="#expertise" data-nav-link>Keahlian</a></li>
-    <li><a href="#works" data-nav-link>Karya</a></li>
-    <li><a href="#tontonan" data-nav-link>Tontonan</a></li>
-    <li><a href="#contact" data-nav-link>Kontak</a></li>
-  </ul>
-  <div class="nav-actions">
-    <div class="nav-meta">Portofolio · Web Dev</div>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Ganti tema terang/gelap" title="Ganti tema">
-      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Buka menu navigasi">
-      <span></span>
-      <span></span>
-    </button>
-  </div>
-</nav>
-
-<!-- Overlay menu mobile -->
-<div class="nav-overlay" id="nav-overlay">
-  <ul>
-    <li><a href="#about">Tentang</a></li>
-    <li><a href="#expertise">Keahlian</a></li>
-    <li><a href="#works">Karya</a></li>
-    <li><a href="#tontonan">Tontonan</a></li>
-    <li><a href="#contact">Kontak</a></li>
-  </ul>
 </div>
-
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-grid">
-    <div class="hero-text">
-      <div class="hero-eyebrow">Portofolio Personal — David Firdaus</div>
-      <h1 class="hero-title">
-        <div class="line-mask"><div class="line" data-line1>Membangun pengalaman</div></div>
-        <div class="line-mask"><div class="line" data-line2><span class="italic">digital yang berkesan.</span></div></div>
-      </h1>
-      <p class="hero-subtitle">
-        Saya adalah seorang Web Developer dan UI Designer yang berfokus pada pengembangan website modern, aplikasi berbasis web, serta otomasi menggunakan API. Saya menikmati proses mengubah ide menjadi produk digital yang cepat, responsif, dan mudah digunakan.
-      </p>
-      <div class="hero-meta">
-        <div>
-          <span>Peran</span>
-          <strong>Web Developer & UI Designer</strong>
-        </div>
-        <div>
-          <span>Lokasi</span>
-          <strong>Indonesia</strong>
-        </div>
-        <div>
-          <span>Tahun</span>
-          <strong>2026</strong>
-        </div>
-      </div>
-
-      <div class="hero-cta-wrap fade-up">
-        <div class="cta-kicker">Untuk karya lengkap</div>
-        <a href="https://dflinks.pages.dev/" target="_blank" rel="noopener" class="cta-magnetic" data-magnetic>
-          <span class="cta-text-wrap">
-            <span class="cta-text">Kunjungi website</span>
-            <span class="cta-text-clone">Kunjungi website</span>
-          </span>
-          <span class="cta-arrow">
-            <svg viewBox="0 0 30 12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 6h26M20 1l5 5-5 5"/></svg>
-            <svg viewBox="0 0 30 12" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 6h26M20 1l5 5-5 5"/></svg>
-          </span>
-        </a>
-      </div>
-    </div>
-
-    <div class="hero-portrait">
-      <img src="4_5Anime.png" alt="Potret David Firdaus" class="hero-image">
-    </div>
-  </div>
-
-  <div class="hero-scroll-cue">
-    <span>Gulirkan</span>
-    <div class="hero-scroll-cue-line"></div>
-  </div>
-</section>
-
-<!-- Marquee -->
-<div class="marquee">
-  <div class="marquee-track">
-    <div class="marquee-item">Web Development</div>
-    <div class="marquee-item">UI/UX Design</div>
-    <div class="marquee-item">PHP & MySQL</div>
-    <div class="marquee-item">JavaScript</div>
-    <div class="marquee-item">Cloudflare</div>
-    <div class="marquee-item">Telegram Bot</div>
-    <div class="marquee-item">Web Development</div>
-    <div class="marquee-item">UI/UX Design</div>
-    <div class="marquee-item">PHP & MySQL</div>
-    <div class="marquee-item">JavaScript</div>
-    <div class="marquee-item">Cloudflare</div>
-    <div class="marquee-item">Telegram Bot</div>
-  </div>
-</div>
-
-<!-- Indeks / Statistik -->
-<section class="index">
-  <div class="index-grid">
-    <div class="index-item fade-up">
-      <div class="index-number" data-count="5" data-suffix="">0</div>
-      <div class="index-label">Proyek Pribadi</div>
-      <div class="index-desc">DF Bank, DF University, DF Komik, DF Links, DF University.</div>
-    </div>
-    <div class="index-item fade-up">
-      <div class="index-number" data-count="10" data-suffix="+">0</div>
-      <div class="index-label">Teknologi</div>
-      <div class="index-desc">HTML, CSS, JS, PHP, MySQL, Cloudflare, API.</div>
-    </div>
-    <div class="index-item fade-up">
-      <div class="index-number" data-count="1" data-suffix="">0</div>
-      <div class="index-label">Fokus Utama</div>
-      <div class="index-desc">Membangun produk digital cepat dan fungsional.</div>
-    </div>
-    <div class="index-item fade-up">
-      <div class="index-number">∞</div>
-      <div class="index-label">Rasa Ingin Tahu</div>
-      <div class="index-desc">Terus belajar dan mengeksplorasi hal baru.</div>
-    </div>
-  </div>
-</section>
-
-<!-- Tentang -->
-<section id="about">
-  <div class="section-header">
-    <div class="section-number fade-up">No. 01</div>
-    <h2 class="section-title fade-up">Tentang <span class="italic">saya.</span></h2>
-    <div class="section-tag fade-up">Profil · Biografi</div>
-  </div>
-
-  <div class="about-grid">
-    <div class="about-photo fade-up">
-      <img src="4_5Animeabout.png" alt="Potret David Firdaus" class="about-image">
-    </div>
-
-    <div class="about-content">
-      <p class="fade-up">
-        Halo, saya <strong>David Firdaus</strong>, seorang mahasiswa Teknik Informatika sekaligus pengembang web yang memiliki ketertarikan besar pada teknologi, desain antarmuka, dan pengalaman pengguna.
-      </p>
-      <p class="fade-up">
-        Saya terbiasa membangun website menggunakan HTML, CSS, JavaScript, PHP, MySQL, dan Cloudflare. Selain mengembangkan aplikasi web, saya juga mengeksplorasi integrasi API, Telegram Bot, optimasi performa website, hingga deployment ke hosting.
-      </p>
-
-      <div class="about-quote fade-up">
-        "Teknologi terbaik adalah teknologi yang terasa sederhana bagi penggunanya."
-      </div>
-
-      <p class="fade-up">
-        Bagi saya, sebuah produk digital bukan hanya harus terlihat menarik, tetapi juga memiliki performa yang cepat, struktur kode yang rapi, serta mudah dikembangkan di masa depan.
-      </p>
-
-      <div class="about-signature fade-up">
-        <div class="signature-text">— David Firdaus</div>
-        <div class="signature-line"></div>
-        <div class="signature-text">Mahasiswa Teknik Informatika</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Keahlian -->
-<section id="expertise">
-  <div class="section-header">
-    <div class="section-number fade-up">No. 02</div>
-    <h2 class="section-title fade-up">Keahlian <span class="italic">utama.</span></h2>
-    <div class="section-tag fade-up">Disiplin · Praktik</div>
-  </div>
-
-  <div class="expertise-list">
-    <div class="expertise-item fade-up">
-      <div class="expertise-num">01</div>
-      <div class="expertise-name">Web Development</div>
-      <div class="expertise-desc">Membangun aplikasi berbasis web modern, cepat, dan responsif menggunakan HTML, CSS, dan JavaScript.</div>
-      <div class="expertise-year">Front-end</div>
-    </div>
-    <div class="expertise-item fade-up">
-      <div class="expertise-num">02</div>
-      <div class="expertise-name">PHP & MySQL</div>
-      <div class="expertise-desc">Mengembangkan logika sisi server, basis data relasional, dan arsitektur back-end yang aman untuk aplikasi web.</div>
-      <div class="expertise-year">Back-end</div>
-    </div>
-    <div class="expertise-item fade-up">
-      <div class="expertise-num">03</div>
-      <div class="expertise-name">JavaScript</div>
-      <div class="expertise-desc">Membuat antarmuka yang interaktif, menangani DOM, hingga logika klien yang kompleks dengan JavaScript modern.</div>
-      <div class="expertise-year">Interaktivitas</div>
-    </div>
-    <div class="expertise-item fade-up">
-      <div class="expertise-num">04</div>
-      <div class="expertise-name">UI/UX Design</div>
-      <div class="expertise-desc">Merancang antarmuka yang intuitif dan pengalaman pengguna yang menyenangkan, fokus pada fungsionalitas dan estetika.</div>
-      <div class="expertise-year">Desain</div>
-    </div>
-    <div class="expertise-item fade-up">
-      <div class="expertise-num">05</div>
-      <div class="expertise-name">REST API & Bot</div>
-      <div class="expertise-desc">Integrasi pihak ketiga melalui REST API, serta pengembangan otomasi dan Telegram Bot untuk berbagai kebutuhan.</div>
-      <div class="expertise-year">Integrasi</div>
-    </div>
-    <div class="expertise-item fade-up">
-      <div class="expertise-num">06</div>
-      <div class="expertise-name">Cloudflare Deployment</div>
-      <div class="expertise-desc">Manajemen DNS, hosting, keamanan web, dan optimasi performa situs menggunakan ekosistem Cloudflare.</div>
-      <div class="expertise-year">DevOps</div>
-    </div>
-  </div>
-</section>
-
-<!-- Karya (Gulir Horizontal) -->
-<section id="works" class="works-section">
-  <div class="works-header">
-    <div class="section-header">
-      <div class="section-number fade-up">No. 03</div>
-      <h2 class="section-title fade-up">Karya <span class="italic">terpilih.</span></h2>
-      <div class="section-tag fade-up">Gulirkan untuk melihat</div>
-    </div>
-    <p class="section-desc fade-up">
-      Berikut adalah beberapa proyek yang saya kembangkan, mulai dari website, aplikasi berbasis web, sistem informasi, hingga eksperimen teknologi yang saya bangun sebagai media belajar maupun kebutuhan nyata.
-    </p>
-  </div>
-
-  <div class="works-viewport" id="works-viewport">
-    <div class="works-pin">
-      <div class="works-track" id="works-track">
-
-        <article class="work-card">
-          <div class="work-card-meta"><span>No. 01</span><span>Web App</span></div>
-          <div class="work-card-image">
-            <img src="dfkomik.png" alt="DF Komik" class="work-card-img">
-          </div>
-          <h3 class="work-card-title">DF Komik<br>Platform Baca Manga</h3>
-          <div class="work-card-tag">Web Development · PHP</div>
-        </article>
-
-        <article class="work-card">
-          <div class="work-card-meta"><span>No. 02</span><span>Sistem</span></div>
-          <div class="work-card-image">
-            <img src="dfbank.png" alt="DF Bank" class="work-card-img">
-          </div>
-          <h3 class="work-card-title">DF Bank<br>Manajemen Data</h3>
-          <div class="work-card-tag">Sistem Informasi · MySQL</div>
-        </article>
-
-        <article class="work-card">
-          <div class="work-card-meta"><span>No. 03</span><span>Web App</span></div>
-          <div class="work-card-image">
-            <img src="dflinks.png" alt="DF Links" class="work-card-img">
-          </div>
-          <h3 class="work-card-title">DF Links<br>Penyingkat Tautan</h3>
-          <div class="work-card-tag">Web App · API</div>
-        </article>
-
-        <article class="work-card">
-          <div class="work-card-meta"><span>No. 04</span><span>Pendidikan</span></div>
-          <div class="work-card-image">
-            <img src="dfuniversity.png" alt="DF University" class="work-card-img">
-          </div>
-          <h3 class="work-card-title">DF University<br>Terintegrasi dengan DF Bank</h3>
-          <div class="work-card-tag">Education · Payment</div>
-        </article>
-
-      </div>
-
-      <div class="works-progress-label">Gulirkan →</div>
-      <div class="works-progress">
-        <div class="works-progress-fill" id="works-progress-fill"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Galeri Mosik -->
-<section class="gallery-section">
-  <div class="section-header">
-    <div class="section-number fade-up">No. 04</div>
-    <h2 class="section-title fade-up">Mozaik <span class="italic">visual.</span></h2>
-    <div class="section-tag fade-up">Arsip · Hover untuk fokus</div>
-  </div>
-
-  <div class="gallery-grid" id="gallery-grid">
-    <div class="gallery-tile t1">
-      <div class="photo-placeholder">
-        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span class="placeholder-label">Tambah foto di sini</span>
-      </div>
-      <div class="gallery-tile-label">DF Komik</div>
-    </div>
-    <div class="gallery-tile t2">
-      <div class="photo-placeholder">
-        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span class="placeholder-label">Tambah foto</span>
-      </div>
-      <div class="gallery-tile-label">DF Links</div>
-    </div>
-    <div class="gallery-tile t3">
-      <div class="photo-placeholder">
-        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span class="placeholder-label">Tambah foto</span>
-      </div>
-      <div class="gallery-tile-label">DF Bank</div>
-    </div>
-    <div class="gallery-tile t4">
-      <div class="photo-placeholder">
-        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span class="placeholder-label">Tambah foto</span>
-      </div>
-      <div class="gallery-tile-label">DF University</div>
-    </div>
-    <div class="gallery-tile t5">
-      <div class="photo-placeholder">
-        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span class="placeholder-label">Tambah foto</span>
-      </div>
-      <div class="gallery-tile-label">UI / UX</div>
-    </div>
-    <div class="gallery-tile t6">
-      <div class="photo-placeholder">
-        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span class="placeholder-label">Tambah foto</span>
-      </div>
-      <div class="gallery-tile-label">Telegram Bot</div>
-    </div>
-  </div>
-</section>
-
-<!-- Tontonan (Video) -->
-<section id="tontonan" class="tontonan">
-  <div class="section-header">
-    <div class="section-number fade-up">No. 05</div>
-    <h2 class="section-title fade-up">Tontonan <span class="italic">pilihan.</span></h2>
-    <div class="section-tag fade-up">Video · YouTube</div>
-  </div>
-
-  <div class="video-feature fade-up">
-    <div class="video-frame">
-      <iframe src="https://www.youtube.com/embed/VHAVnzVAgdI" title="Demo pengembangan Aplikasi Web" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
-
-    <div class="video-feature-meta">
-      <div class="video-feature-num">Video / 01</div>
-      <h3 class="video-feature-title">Demo pengembangan <span class="italic">— Aplikasi Web</span></h3>
-      <div class="video-feature-duration">03:42</div>
-    </div>
-  </div>
-
-  <div class="video-list">
-    <article class="video-card fade-up">
-      <div class="video-frame">
-        <iframe src="https://www.youtube.com/embed/VHAVnzVAgdI" title="Integrasi API & Telegram Bot" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-      <div class="video-card-meta">
-        <div class="video-card-header"><span>Video / 02</span><span>02:15</span></div>
-        <h4 class="video-card-title">Integrasi API & Telegram Bot</h4>
-        <p class="video-card-desc">Eksperimen otomasi menggunakan Telegram Bot dan PHP.</p>
-      </div>
-    </article>
-
-    <article class="video-card fade-up">
-      <div class="video-frame">
-        <iframe src="https://www.youtube.com/embed/VHAVnzVAgdI" title="Optimasi Cloudflare" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-      <div class="video-card-meta">
-        <div class="video-card-header"><span>Video / 03</span><span>04:28</span></div>
-        <h4 class="video-card-title">Optimasi Cloudflare</h4>
-        <p class="video-card-desc">Tips dan trik deployment website agar lebih cepat.</p>
-      </div>
-    </article>
-
-    <article class="video-card fade-up">
-      <div class="video-frame">
-        <iframe src="https://www.youtube.com/embed/VHAVnzVAgdI" title="UI/UX Design Process" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-      <div class="video-card-meta">
-        <div class="video-card-header"><span>Video / 04</span><span>01:53</span></div>
-        <h4 class="video-card-title">UI/UX Design Process</h4>
-        <p class="video-card-desc">Secercah proses merancang antarmuka pengguna yang intuitif.</p>
-      </div>
-    </article>
-  </div>
-</section>
-
-<!-- Filosofi -->
-<section class="philosophy">
-  <div class="watermark watermark-right">DEV</div>
-  <p class="philosophy-quote fade-up">
-    "Teknologi terbaik adalah teknologi yang <span class="italic">terasa sederhana</span> bagi penggunanya."
-  </p>
-  <div class="philosophy-attribute fade-up">— Filosofi Pengembangan, 2026</div>
-</section>
-
-<!-- Kontak -->
-<section id="contact" class="contact">
-  <div class="contact-grid">
-    <div>
-      <div class="contact-eyebrow fade-up">No. 06 — Hubungi</div>
-      <h2 class="contact-title fade-up">
-        Mari <span class="italic">bekerja</span><br>sama.
-      </h2>
-      <p class="contact-desc fade-up">
-        Tertarik bekerja sama atau ingin berdiskusi mengenai proyek digital? Saya selalu terbuka untuk peluang baru, kolaborasi, maupun pengembangan produk berbasis web.
-      </p>
-
-      <div class="fade-up" style="margin-bottom: 2rem;">
-        <a href="https://dflinks.pages.dev/" target="_blank" rel="noopener" class="cta-magnetic cta-large" data-magnetic>
-          <span class="cta-text-wrap">
-            <span class="cta-text">Buka website saya</span>
-            <span class="cta-text-clone">Buka website saya</span>
-          </span>
-          <span class="cta-arrow">
-            <svg viewBox="0 0 38 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 7h32M26 1l6 6-6 6"/></svg>
-            <svg viewBox="0 0 38 14" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 7h32M26 1l6 6-6 6"/></svg>
-          </span>
-        </a>
-      </div>
-
-      <a href="https://dflinks.pages.dev/" target="_blank" rel="noopener" class="cta-micro fade-up">
-        atau jelajahi arsip lengkap
-        <svg viewBox="0 0 14 8" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M0 4h12M9 1l3 3-3 3"/></svg>
-      </a>
-    </div>
-
-    <div class="contact-info">
-      <div class="contact-row fade-up">
-        <div class="contact-label">Surel</div>
-        <a class="contact-value" href="mailto:2414101001@unma.ac.id">2414101001@unma.ac.id</a>
-      </div>
-      <div class="contact-row fade-up">
-        <div class="contact-label">Website</div>
-        <a class="contact-value" href="https://dflinks.pages.dev/" target="_blank" rel="noopener">dflinks.pages.dev</a>
-      </div>
-      <div class="contact-row fade-up">
-        <div class="contact-label">Telegram</div>
-        <a class="contact-value" href="#" target="_blank" rel="noopener">@davidfirdaus</a>
-      </div>
-      <div class="contact-row fade-up">
-        <div class="contact-label">GitHub</div>
-        <a class="contact-value" href="#" target="_blank" rel="noopener">github.com/davidfirdaus08</a>
-      </div>
-      <div class="contact-row fade-up">
-        <div class="contact-label">Lokasi</div>
-        <div class="contact-value">Indonesia</div>
-      </div>
-      <div class="contact-row fade-up">
-        <div class="contact-label">Status</div>
-        <div class="contact-value">Terbuka untuk kolaborasi</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Saklar Lampu (Toggle Tema) -->
-<section class="lamp-section">
-  <div class="lamp-watermark" id="lamp-watermark">TERANG</div>
-  <div class="lamp-container">
-    <div class="lamp-eyebrow fade-up">No. 07 — Preferensi</div>
-    <h2 class="lamp-title fade-up">Saklar <span class="italic">cahaya.</span></h2>
-    <p class="lamp-desc fade-up">
-      Pilih suasana yang sesuai. Tarik tuas ke bawah untuk mode gelap,
-      dorong ke atas untuk mode terang. Preferensi akan tersimpan secara otomatis.
-    </p>
-
-    <div class="lamp-switch-wrapper fade-up">
-      <div class="lamp-label is-active" id="lamp-label-light">Terang</div>
-      <button class="lamp-switch" id="lamp-switch" aria-label="Beralih mode terang/gelap" aria-pressed="false">
-        <div class="lamp-track">
-          <div class="lamp-track-marks">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="lamp-handle">
-            <div class="lamp-handle-inner"></div>
-          </div>
-        </div>
-      </button>
-      <div class="lamp-label" id="lamp-label-dark">Gelap</div>
-    </div>
-
-    <div class="lamp-status fade-up" id="lamp-status">Mode aktif: Terang</div>
-  </div>
-</section>
-
-<!-- Tombol Kembali ke Atas -->
-<button class="back-to-top" id="back-to-top" aria-label="Kembali ke atas">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+<div class=noise-overlay></div>
+<div class=cursor-dot></div>
+<div class=cursor-ring></div>
+<div class=scroll-progress id=scroll-progress></div>
+<nav class=nav>
+<a href=# class=nav-logo>David Firdaus <span>/ 2026</span></a>
+<ul class=nav-menu>
+<li><a href=#about data-nav-link data-i18n=nav_about>Tentang</a></li>
+<li><a href=#expertise data-nav-link data-i18n=nav_expertise>Keahlian</a></li>
+<li><a href=#works data-nav-link data-i18n=nav_works>Karya</a></li>
+<li><a href=#tontonan data-nav-link data-i18n=nav_watch>Tontonan</a></li>
+<li><a href=#contact data-nav-link data-i18n=nav_contact>Kontak</a></li>
+</ul>
+<div class=nav-actions>
+<div class=nav-meta>Portofolio · Web Dev</div>
+<div class=lang-wrapper>
+<button class=lang-btn id=lang-btn aria-label="Ganti bahasa">
+<svg viewBox="0 0 24 24" stroke-linecap=round stroke-linejoin=round><circle cx=12 cy=12 r=10 /><line x1=2 y1=12 x2=22 y2=12 /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+<span id=current-lang>ID</span>
 </button>
-
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-left">© 2026 — David Firdaus</div>
-  <div class="footer-center">Designed & Developed by David Firdaus</div>
-  <div class="footer-right">Web Developer · UI Designer</div>
+<div class=lang-dropdown id=lang-dropdown>
+<button class="lang-option is-active" data-lang=id>Indonesia</button>
+<button class=lang-option data-lang=en>English</button>
+<button class=lang-option data-lang=es>Español</button>
+<button class=lang-option data-lang=de>Deutsch</button>
+<button class=lang-option data-lang=fr>Français</button>
+<button class=lang-option data-lang=ar>العربية</button>
+<button class=lang-option data-lang=zh>中文</button>
+<button class=lang-option data-lang=ja>日本語</button>
+<button class=lang-option data-lang=ko>한국어</button>
+</div>
+</div>
+<button class=theme-toggle id=theme-toggle aria-label="Ganti tema terang/gelap" title="Ganti tema">
+<svg class=icon-sun viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.5 stroke-linecap=round stroke-linejoin=round><circle cx=12 cy=12 r=4 /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+<svg class=icon-moon viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.5 stroke-linecap=round stroke-linejoin=round><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+</button>
+<button class=nav-toggle id=nav-toggle aria-label="Buka menu navigasi">
+<span></span>
+<span></span>
+</button>
+</div>
+</nav>
+<div class=nav-overlay id=nav-overlay>
+<ul>
+<li><a href=#about data-nav-link data-i18n=nav_about>Tentang</a></li>
+<li><a href=#expertise data-nav-link data-i18n=nav_expertise>Keahlian</a></li>
+<li><a href=#works data-nav-link data-i18n=nav_works>Karya</a></li>
+<li><a href=#tontonan data-nav-link data-i18n=nav_watch>Tontonan</a></li>
+<li><a href=#contact data-nav-link data-i18n=nav_contact>Kontak</a></li>
+</ul>
+</div>
+<section class=hero>
+<div class=hero-grid>
+<div class=hero-text>
+<div class=hero-eyebrow data-i18n=hero_eyebrow>Portofolio Personal — David Firdaus</div>
+<h1 class=hero-title>
+<div class=line-mask><div class=line data-line1 data-i18n=hero_title_1>Membangun pengalaman</div></div>
+<div class=line-mask><div class=line data-line2><span class=italic data-i18n=hero_title_2>digital yang berkesan.</span></div></div>
+</h1>
+<p class=hero-subtitle data-i18n=hero_subtitle>
+Saya adalah seorang Web Developer dan UI Designer yang berfokus pada pengembangan website modern, aplikasi berbasis web, serta otomasi menggunakan API. Saya menikmati proses mengubah ide menjadi produk digital yang cepat, responsif, dan mudah digunakan.
+</p>
+<div class=hero-meta>
+<div>
+<span data-i18n=hero_meta_role>Peran</span>
+<strong data-i18n=hero_meta_role_val>Web Developer & UI Designer</strong>
+</div>
+<div>
+<span data-i18n=hero_meta_loc>Lokasi</span>
+<strong data-i18n=hero_meta_loc_val>Indonesia</strong>
+</div>
+<div>
+<span data-i18n=hero_meta_year>Tahun</span>
+<strong data-i18n=hero_meta_year_val>2026</strong>
+</div>
+</div>
+<div class="hero-cta-wrap fade-up">
+<div class=cta-kicker data-i18n=hero_cta_kicker>Untuk karya lengkap</div>
+<a href=https://dflinks.pages.dev/ target=_blank rel=noopener class=cta-magnetic data-magnetic>
+<span class=cta-text-wrap>
+<span class=cta-text data-i18n=hero_cta_text>Kunjungi website</span>
+<span class=cta-text-clone data-i18n=hero_cta_text>Kunjungi website</span>
+</span>
+<span class=cta-arrow>
+<svg viewBox="0 0 30 12" fill=none stroke=currentColor stroke-width=1.2><path d="M0 6h26M20 1l5 5-5 5"/></svg>
+<svg viewBox="0 0 30 12" fill=none stroke=currentColor stroke-width=1.2><path d="M0 6h26M20 1l5 5-5 5"/></svg>
+</span>
+</a>
+<a href=cv-david-firdaus.pdf download class=cta-download aria-label="Download CV David Firdaus">
+<svg viewBox="0 0 24 24">
+<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+<polyline points="7 10 12 15 17 10"/>
+<line x1=12 y1=15 x2=12 y2=3 />
+</svg>
+<span data-i18n=hero_cta_cv>Download CV</span>
+</a>
+</div>
+</div>
+<div class=hero-portrait>
+<img src=4_5Anime.png alt="Potret David Firdaus" class=hero-image>
+</div>
+</div>
+<div class=hero-scroll-cue>
+<span data-i18n=hero_scroll>Gulirkan</span>
+<div class=hero-scroll-cue-line></div>
+</div>
+</section>
+<div class=marquee>
+<div class=marquee-track>
+<div class=marquee-item>Web Development</div>
+<div class=marquee-item>UI/UX Design</div>
+<div class=marquee-item>PHP & MySQL</div>
+<div class=marquee-item>JavaScript</div>
+<div class=marquee-item>Cloudflare</div>
+<div class=marquee-item>Telegram Bot</div>
+<div class=marquee-item>Web Development</div>
+<div class=marquee-item>UI/UX Design</div>
+<div class=marquee-item>PHP & MySQL</div>
+<div class=marquee-item>JavaScript</div>
+<div class=marquee-item>Cloudflare</div>
+<div class=marquee-item>Telegram Bot</div>
+</div>
+</div>
+<section class=index>
+<div class=index-grid>
+<div class="index-item fade-up">
+<div class=index-number data-count=15 data-suffix="">0</div>
+<div class=index-label>Proyek Pribadi</div>
+<div class=index-desc>DF Scenery, DF Komik, DF Bank, DF University, DF Shop, DF ChatRoom, Aetherun, Veyndao, Kalkulator Jualan, Kalkulator Resep, Generator QR, Kalkulator IPK, Pengubah Huruf, Color Rush, Tap Rush.</div>
+</div>
+<div class="index-item fade-up">
+<div class=index-number data-count=10 data-suffix=+>0</div>
+<div class=index-label>Teknologi</div>
+<div class=index-desc>HTML, CSS, JS, PHP, MySQL, Cloudflare, API.</div>
+</div>
+<div class="index-item fade-up">
+<div class=index-number data-count=1 data-suffix="">0</div>
+<div class=index-label>Fokus Utama</div>
+<div class=index-desc>Membangun produk digital cepat dan fungsional.</div>
+</div>
+<div class="index-item fade-up">
+<div class=index-number>∞</div>
+<div class=index-label>Rasa Ingin Tahu</div>
+<div class=index-desc>Terus belajar dan mengeksplorasi hal baru.</div>
+</div>
+</div>
+</section>
+<section id=about>
+<div class=section-header>
+<div class="section-number fade-up">No. 01</div>
+<h2 class="section-title fade-up">Tentang <span class=italic>saya.</span></h2>
+<div class="section-tag fade-up">Profil · Biografi</div>
+</div>
+<div class=about-grid>
+<div class="about-photo fade-up">
+<img src=4_5Animeabout.png alt="Potret David Firdaus" class=about-image>
+</div>
+<div class=about-content>
+<p class=fade-up data-i18n=about_p1>
+Halo, saya <strong>David Firdaus</strong>, seorang mahasiswa Teknik Informatika sekaligus pengembang web yang memiliki ketertarikan besar pada teknologi, desain antarmuka, dan pengalaman pengguna.
+</p>
+<p class=fade-up data-i18n=about_p2>
+Saya terbiasa membangun website menggunakan HTML, CSS, JavaScript, PHP, MySQL, dan Cloudflare. Selain mengembangkan aplikasi web, saya juga mengeksplorasi integrasi API, Telegram Bot, optimasi performa website, hingga deployment ke hosting.
+</p>
+<div class="about-quote fade-up" data-i18n=about_quote>
+"Teknologi terbaik adalah teknologi yang terasa sederhana bagi penggunanya."
+</div>
+<p class=fade-up data-i18n=about_p3>
+Bagi saya, sebuah produk digital bukan hanya harus terlihat menarik, tetapi juga memiliki performa yang cepat, struktur kode yang rapi, serta mudah dikembangkan di masa depan.
+</p>
+<div class="about-signature fade-up">
+<div class=signature-text data-i18n=about_sig1>— David Firdaus</div>
+<div class=signature-line></div>
+<div class=signature-text data-i18n=about_sig2>Mahasiswa Teknik Informatika</div>
+</div>
+</div>
+</div>
+</section>
+<section id=expertise>
+<div class=section-header>
+<div class="section-number fade-up">No. 02</div>
+<h2 class="section-title fade-up">Keahlian <span class=italic>utama.</span></h2>
+<div class="section-tag fade-up">Disiplin · Praktik</div>
+</div>
+<div class=expertise-list>
+<div class="expertise-item fade-up">
+<div class=expertise-num>01</div>
+<div class=expertise-name>Web Development</div>
+<div class=expertise-desc>Membangun aplikasi berbasis web modern, cepat, dan responsif menggunakan HTML, CSS, dan JavaScript.</div>
+<div class=expertise-year>Front-end</div>
+</div>
+<div class="expertise-item fade-up">
+<div class=expertise-num>02</div>
+<div class=expertise-name>PHP & MySQL</div>
+<div class=expertise-desc>Mengembangkan logika sisi server, basis data relasional, dan arsitektur back-end yang aman untuk aplikasi web.</div>
+<div class=expertise-year>Back-end</div>
+</div>
+<div class="expertise-item fade-up">
+<div class=expertise-num>03</div>
+<div class=expertise-name>JavaScript</div>
+<div class=expertise-desc>Membuat antarmuka yang interaktif, menangani DOM, hingga logika klien yang kompleks dengan JavaScript modern.</div>
+<div class=expertise-year>Interaktivitas</div>
+</div>
+<div class="expertise-item fade-up">
+<div class=expertise-num>04</div>
+<div class=expertise-name>UI/UX Design</div>
+<div class=expertise-desc>Merancang antarmuka yang intuitif dan pengalaman pengguna yang menyenangkan, fokus pada fungsionalitas dan estetika.</div>
+<div class=expertise-year>Desain</div>
+</div>
+<div class="expertise-item fade-up">
+<div class=expertise-num>05</div>
+<div class=expertise-name>REST API & Bot</div>
+<div class=expertise-desc>Integrasi pihak ketiga melalui REST API, serta pengembangan otomasi dan Telegram Bot untuk berbagai kebutuhan.</div>
+<div class=expertise-year>Integrasi</div>
+</div>
+<div class="expertise-item fade-up">
+<div class=expertise-num>06</div>
+<div class=expertise-name>Cloudflare Deployment</div>
+<div class=expertise-desc>Manajemen DNS, hosting, keamanan web, dan optimasi performa situs menggunakan ekosistem Cloudflare.</div>
+<div class=expertise-year>DevOps</div>
+</div>
+</div>
+</section>
+<section id=works class=works-section>
+<div class=works-header>
+<div class=section-header>
+<div class="section-number fade-up">No. 03</div>
+<h2 class="section-title fade-up">Karya <span class=italic>terpilih.</span></h2>
+<div class="section-tag fade-up">Geser & Tahan</div>
+</div>
+<p class="section-desc fade-up">
+Berikut adalah beberapa proyek yang saya kembangkan, mulai dari website, aplikasi berbasis web, sistem informasi, hingga eksperimen teknologi yang saya bangun sebagai media belajar maupun kebutuhan nyata.
+</p>
+</div>
+<div class=works-carousel-wrapper>
+<div class=works-carousel id=works-carousel>
+<article class=work-card>
+<div class=work-card-meta><span>No. 01</span><span>Web App</span></div>
+<div class=work-card-image>
+<img src=dfkomik.png alt="DF Komik" class=work-card-img>
+</div>
+<h3 class=work-card-title>DF Komik<br>Platform Baca Manga</h3>
+<div class=work-card-tag>Web Development · PHP</div>
+</article>
+<article class=work-card>
+<div class=work-card-meta><span>No. 02</span><span>Sistem</span></div>
+<div class=work-card-image>
+<img src=dfbank.png alt="DF Bank" class=work-card-img>
+</div>
+<h3 class=work-card-title>DF Bank<br>Manajemen Data</h3>
+<div class=work-card-tag>Sistem Informasi · MySQL</div>
+</article>
+<article class=work-card>
+<div class=work-card-meta><span>No. 03</span><span>Web App</span></div>
+<div class=work-card-image>
+<img src=dflinks.png alt="DF Links" class=work-card-img>
+</div>
+<h3 class=work-card-title>DF Links<br>Penyingkat Tautan</h3>
+<div class=work-card-tag>Web App · API</div>
+</article>
+<article class=work-card>
+<div class=work-card-meta><span>No. 04</span><span>Pendidikan</span></div>
+<div class=work-card-image>
+<img src=dfuniversity.png alt="DF University" class=work-card-img>
+</div>
+<h3 class=work-card-title>DF University<br>Terintegrasi dengan DF Bank</h3>
+<div class=work-card-tag>Education · Payment</div>
+</article>
+</div>
+<div class=works-nav>
+<button class=works-nav-btn id=works-prev aria-label=Sebelumnya>
+<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.5 stroke-linecap=round stroke-linejoin=round><path d="M15 18l-6-6 6-6"/></svg>
+</button>
+<div class=works-dots id=works-dots></div>
+<button class=works-nav-btn id=works-next aria-label=Selanjutnya>
+<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.5 stroke-linecap=round stroke-linejoin=round><path d="M9 18l6-6-6-6"/></svg>
+</button>
+</div>
+</div>
+</section>
+<section class=gallery-section>
+<div class=section-header>
+<div class="section-number fade-up">No. 04</div>
+<h2 class="section-title fade-up">Mozaik <span class=italic>visual.</span></h2>
+<div class="section-tag fade-up">Arsip · Hover untuk fokus</div>
+</div>
+<div class=gallery-grid id=gallery-grid>
+<div class="gallery-tile t1">
+<div class=photo-placeholder>
+<svg class=placeholder-icon viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1><rect x=3 y=3 width=18 height=18 /><circle cx=8.5 cy=8.5 r=1.5 /><path d="M21 15l-5-5L5 21"/></svg>
+<span class=placeholder-label>Tambah foto</span>
+</div>
+<div class=gallery-tile-label>DF Komik</div>
+</div>
+<div class="gallery-tile t2">
+<div class=photo-placeholder>
+<svg class=placeholder-icon viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1><rect x=3 y=3 width=18 height=18 /><circle cx=8.5 cy=8.5 r=1.5 /><path d="M21 15l-5-5L5 21"/></svg>
+<span class=placeholder-label>Tambah foto</span>
+</div>
+<div class=gallery-tile-label>DF Links</div>
+</div>
+<div class="gallery-tile t3">
+<div class=photo-placeholder>
+<svg class=placeholder-icon viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1><rect x=3 y=3 width=18 height=18 /><circle cx=8.5 cy=8.5 r=1.5 /><path d="M21 15l-5-5L5 21"/></svg>
+<span class=placeholder-label>Tambah foto</span>
+</div>
+<div class=gallery-tile-label>DF Bank</div>
+</div>
+<div class="gallery-tile t4">
+<div class=photo-placeholder>
+<svg class=placeholder-icon viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1><rect x=3 y=3 width=18 height=18 /><circle cx=8.5 cy=8.5 r=1.5 /><path d="M21 15l-5-5L5 21"/></svg>
+<span class=placeholder-label>Tambah foto</span>
+</div>
+<div class=gallery-tile-label>DF University</div>
+</div>
+<div class="gallery-tile t5">
+<div class=photo-placeholder>
+<svg class=placeholder-icon viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1><rect x=3 y=3 width=18 height=18 /><circle cx=8.5 cy=8.5 r=1.5 /><path d="M21 15l-5-5L5 21"/></svg>
+<span class=placeholder-label>Tambah foto</span>
+</div>
+<div class=gallery-tile-label>UI / UX</div>
+</div>
+<div class="gallery-tile t6">
+<div class=photo-placeholder>
+<svg class=placeholder-icon viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1><rect x=3 y=3 width=18 height=18 /><circle cx=8.5 cy=8.5 r=1.5 /><path d="M21 15l-5-5L5 21"/></svg>
+<span class=placeholder-label>Tambah foto</span>
+</div>
+<div class=gallery-tile-label>Telegram Bot</div>
+</div>
+</div>
+</section>
+<section id=tontonan class=tontonan>
+<div class=section-header>
+<div class="section-number fade-up">No. 05</div>
+<h2 class="section-title fade-up">Tontonan <span class=italic>pilihan.</span></h2>
+<div class="section-tag fade-up">Video · YouTube</div>
+</div>
+<div class="video-feature fade-up">
+<div class=video-frame>
+<iframe src=https://www.youtube.com/embed/VHAVnzVAgdI title="Demo pengembangan Aplikasi Web" frameborder=0 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<div class=video-feature-meta>
+<div class=video-feature-num>Video / 01</div>
+<h3 class=video-feature-title>Demo pengembangan <span class=italic>— Aplikasi Web</span></h3>
+<div class=video-feature-duration>03:42</div>
+</div>
+</div>
+<div class=video-list>
+<article class="video-card fade-up">
+<div class=video-frame>
+<iframe src=https://www.youtube.com/embed/VHAVnzVAgdI title="Integrasi API & Telegram Bot" frameborder=0 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<div class=video-card-meta>
+<div class=video-card-header><span>Video / 02</span><span>02:15</span></div>
+<h4 class=video-card-title>Integrasi API & Telegram Bot</h4>
+<p class=video-card-desc>Eksperimen otomasi menggunakan Telegram Bot dan PHP.</p>
+</div>
+</article>
+<article class="video-card fade-up">
+<div class=video-frame>
+<iframe src=https://www.youtube.com/embed/VHAVnzVAgdI title="Optimasi Cloudflare" frameborder=0 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<div class=video-card-meta>
+<div class=video-card-header><span>Video / 03</span><span>04:28</span></div>
+<h4 class=video-card-title>Optimasi Cloudflare</h4>
+<p class=video-card-desc>Tips dan trik deployment website agar lebih cepat.</p>
+</div>
+</article>
+<article class="video-card fade-up">
+<div class=video-frame>
+<iframe src=https://www.youtube.com/embed/VHAVnzVAgdI title="UI/UX Design Process" frameborder=0 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<div class=video-card-meta>
+<div class=video-card-header><span>Video / 04</span><span>01:53</span></div>
+<h4 class=video-card-title>UI/UX Design Process</h4>
+<p class=video-card-desc>Secercah proses merancang antarmuka pengguna yang intuitif.</p>
+</div>
+</article>
+</div>
+</section>
+<section class=philosophy>
+<div class="watermark watermark-right">DEV</div>
+<p class="philosophy-quote fade-up">
+"Teknologi terbaik adalah teknologi yang <span class=italic>terasa sederhana</span> bagi penggunanya."
+</p>
+<div class="philosophy-attribute fade-up">— Filosofi Pengembangan, 2026</div>
+</section>
+<section id=contact class=contact>
+<div class=contact-grid>
+<div>
+<div class="contact-eyebrow fade-up">No. 06 — Hubungi</div>
+<h2 class="contact-title fade-up">
+Mari <span class=italic>bekerja</span><br>sama.
+</h2>
+<p class="contact-desc fade-up">
+Tertarik bekerja sama atau ingin berdiskusi mengenai proyek digital? Saya selalu terbuka untuk peluang baru, kolaborasi, maupun pengembangan produk berbasis web.
+</p>
+<div class=fade-up style=margin-bottom:2rem>
+<a href=https://dflinks.pages.dev/ target=_blank rel=noopener class="cta-magnetic cta-large" data-magnetic>
+<span class=cta-text-wrap>
+<span class=cta-text>Buka website saya</span>
+<span class=cta-text-clone>Buka website saya</span>
+</span>
+<span class=cta-arrow>
+<svg viewBox="0 0 38 14" fill=none stroke=currentColor stroke-width=1.2><path d="M0 7h32M26 1l6 6-6 6"/></svg>
+<svg viewBox="0 0 38 14" fill=none stroke=currentColor stroke-width=1.2><path d="M0 7h32M26 1l6 6-6 6"/></svg>
+</span>
+</a>
+</div>
+<a href=https://dflinks.pages.dev/ target=_blank rel=noopener class="cta-micro fade-up">
+atau jelajahi arsip lengkap
+<svg viewBox="0 0 14 8" fill=none stroke=currentColor stroke-width=1.2><path d="M0 4h12M9 1l3 3-3 3"/></svg>
+</a>
+</div>
+<div class=contact-info>
+<div class="contact-row fade-up">
+<div class=contact-label>Surel</div>
+<a class=contact-value href=mailto:2414101001@unma.ac.id>2414101001@unma.ac.id</a>
+</div>
+<div class="contact-row fade-up">
+<div class=contact-label>Website</div>
+<a class=contact-value href=https://dflinks.pages.dev/ target=_blank rel=noopener>dflinks.pages.dev</a>
+</div>
+<div class="contact-row fade-up">
+<div class=contact-label>Telegram</div>
+<a class=contact-value href=https://t.me/+6285171202190 target=_blank rel=noopener>t.me/+6285171202190</a>
+</div>
+<div class="contact-row fade-up">
+<div class=contact-label>GitHub</div>
+<a class=contact-value href=https://github.com/davidfirdaus08 target=_blank rel=noopener>github.com/davidfirdaus08</a>
+</div>
+<div class="contact-row fade-up">
+<div class=contact-label>Lokasi</div>
+<div class=contact-value>Indonesia</div>
+</div>
+<div class="contact-row fade-up">
+<div class=contact-label>Status</div>
+<div class=contact-value>Terbuka untuk kolaborasi</div>
+</div>
+</div>
+</div>
+</section>
+<section class=lamp-section>
+<div class=lamp-watermark id=lamp-watermark>TERANG</div>
+<div class=lamp-container>
+<div class="lamp-eyebrow fade-up">No. 07 — Preferensi</div>
+<h2 class="lamp-title fade-up">Saklar <span class=italic>cahaya.</span></h2>
+<p class="lamp-desc fade-up">
+Pilih suasana yang sesuai. Tarik tuas ke bawah untuk mode gelap, dorong ke atas untuk mode terang. Preferensi akan tersimpan secara otomatis.
+</p>
+<div class="lamp-switch-wrapper fade-up">
+<div class="lamp-label is-active" id=lamp-label-light>Terang</div>
+<button class=lamp-switch id=lamp-switch aria-label="Beralih mode terang/gelap" aria-pressed=false>
+<div class=lamp-track>
+<div class=lamp-track-marks>
+<span></span><span></span><span></span>
+</div>
+<div class=lamp-handle>
+<div class=lamp-handle-inner></div>
+</div>
+</div>
+</button>
+<div class=lamp-label id=lamp-label-dark>Gelap</div>
+</div>
+<div class="lamp-status fade-up" id=lamp-status>Mode aktif: Terang</div>
+</div>
+</section>
+<button class=back-to-top id=back-to-top aria-label="Kembali ke atas">
+<svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=1.5 stroke-linecap=round stroke-linejoin=round><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+<footer class=footer>
+<div class=footer-left>© 2026 — David Firdaus</div>
+<div class=footer-center>Designed & Developed by David Firdaus</div>
+<div class=footer-right>Web Developer · UI Designer</div>
 </footer>
-
-<script>
-  /* ==============================================
-     MODUL: PRELOADER
-     Menampilkan animasi pemuatan halaman pada saat dokumen dimuat
-     ============================================== */
-  (function() {
-    const preloader = document.getElementById('preloader');
-    if (!preloader) return;
-
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        preloader.classList.add('is-loaded');
-      }, 600);
-    });
-
-    // Fallback jika event load terlalu lama
-    setTimeout(() => {
-      preloader.classList.add('is-loaded');
-    }, 3000);
-  })();
-
-  /* ==============================================
-     MODUL: MANAJEMEN TEMA
-     Mengelola perubahan tema terang/gelap dengan sinkronisasi
-     antara saklar lampu dan tombol tema pada navigasi
-     ============================================== */
-  (function() {
-    const html = document.documentElement;
-    const lampSwitch = document.getElementById('lamp-switch');
-    const themeToggle = document.getElementById('theme-toggle');
-    const labelLight = document.getElementById('lamp-label-light');
-    const labelDark = document.getElementById('lamp-label-dark');
-    const lampStatus = document.getElementById('lamp-status');
-    const lampWatermark = document.getElementById('lamp-watermark');
-
-    // Memuat tema tersimpan atau mendeteksi preferensi sistem
-    let savedTheme = localStorage.getItem('theme');
-    if (!savedTheme) {
-      savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    applyTheme(savedTheme);
-
-    /**
-     * Menerapkan tema dan memperbarui seluruh elemen antarmuka terkait
-     * @param {string} theme - Nilai tema ('light' atau 'dark')
-     */
-    function applyTheme(theme) {
-      html.setAttribute('data-theme', theme);
-      const isDark = theme === 'dark';
-
-      // Memperbarui status saklar lampu
-      lampSwitch.setAttribute('aria-pressed', isDark);
-      labelLight.classList.toggle('is-active', !isDark);
-      labelDark.classList.toggle('is-active', isDark);
-      lampStatus.textContent = isDark ? 'Mode aktif: Gelap' : 'Mode aktif: Terang';
-      lampWatermark.textContent = isDark ? 'GELAP' : 'TERANG';
-
-      // Memperbarui tombol tema pada navigasi
-      themeToggle.setAttribute('aria-pressed', isDark);
-    }
-
-    /**
-     * Mengubah tema antara terang dan gelap
-     */
-    function toggleTheme() {
-      const current = html.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      localStorage.setItem('theme', next);
-    }
-
-    // Mendaftarkan event listener untuk kedua kontrol tema
-    themeToggle.addEventListener('click', toggleTheme);
-    lampSwitch.addEventListener('click', toggleTheme);
-
-    lampSwitch.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleTheme();
-      }
-    });
-  })();
-
-  /* ==============================================
-     MODUL: NAVIGASI
-     Mengatur menu mobile, deteksi bagian aktif, dan gulir halus
-     ============================================== */
-  (function() {
-    const toggle = document.getElementById('nav-toggle');
-    const overlay = document.getElementById('nav-overlay');
-
-    // Mengatur menu mobile (hamburger)
-    if (toggle && overlay) {
-      function closeNav() {
-        toggle.classList.remove('is-open');
-        overlay.classList.remove('is-open');
-        document.body.style.overflow = '';
-      }
-
-      toggle.addEventListener('click', () => {
-        const isOpen = toggle.classList.toggle('is-open');
-        overlay.classList.toggle('is-open', isOpen);
-        document.body.style.overflow = isOpen ? 'hidden' : '';
-      });
-
-      overlay.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', closeNav);
-      });
-    }
-
-    // Deteksi bagian aktif untuk penyorotan navigasi
-    const navLinks = document.querySelectorAll('[data-nav-link]');
-    const sections = document.querySelectorAll('section[id]');
-
-    if (navLinks.length && sections.length) {
-      const navObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute('id');
-            navLinks.forEach(link => {
-              link.classList.toggle('is-active', link.getAttribute('href') === '#' + id);
-            });
-          }
-        });
-      }, { threshold: 0.3, rootMargin: '-20% 0px -50% 0px' });
-
-      sections.forEach(section => navObserver.observe(section));
-    }
-
-    // Gulir halus untuk tautan jangkar
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const href = link.getAttribute('href');
-        if (href === '#' || href.length <= 1) return;
-        const target = document.querySelector(href);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    });
-  })();
-
-  /* ==============================================
-     MODUL: KURSOR KUSTOM
-     Titik dan cincin yang mengikuti pergerakan mouse (desktop)
-     ============================================== */
-  (function() {
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-
-    const dot = document.querySelector('.cursor-dot');
-    const ring = document.querySelector('.cursor-ring');
-    if (!dot || !ring) return;
-
-    let mx = 0, my = 0, rx = 0, ry = 0;
-
-    window.addEventListener('mousemove', e => {
-      mx = e.clientX;
-      my = e.clientY;
-      dot.classList.add('is-visible');
-      ring.classList.add('is-visible');
-      dot.style.transform = `translate(${mx - 3}px, ${my - 3}px)`;
-    });
-
-    window.addEventListener('mouseout', e => {
-      if (!e.relatedTarget) {
-        dot.classList.remove('is-visible');
-        ring.classList.remove('is-visible');
-      }
-    });
-
-    // Animasi cincin dengan interpolasi untuk efek trailing
-    function tick() {
-      rx += (mx - rx) * 0.15;
-      ry += (my - ry) * 0.15;
-      ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
-      requestAnimationFrame(tick);
-    }
-    tick();
-
-    // Memperbesar cincin pada elemen interaktif
-    const hoverables = 'a, button, .work-card, .gallery-tile, .video-frame, .video-card, .expertise-item, .photo-placeholder, .lamp-switch, .theme-toggle, .back-to-top';
-    document.querySelectorAll(hoverables).forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        ring.style.width = '60px';
-        ring.style.height = '60px';
-      });
-      el.addEventListener('mouseleave', () => {
-        ring.style.width = '36px';
-        ring.style.height = '36px';
-      });
-    });
-  })();
-
-  /* ==============================================
-     MODUL: INDIKATOR PROGRES GULIR
-     Bar tipis di bagian atas halaman yang menunjukkan progres
-     ============================================== */
-  (function() {
-    const progress = document.getElementById('scroll-progress');
-    const backToTop = document.getElementById('back-to-top');
-    if (!progress) return;
-
-    let ticking = false;
-
-    function updateProgress() {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      progress.style.width = percent + '%';
-
-      // Menampilkan tombol kembali ke atas setelah melewati hero
-      if (backToTop) {
-        backToTop.classList.toggle('is-visible', scrollTop > window.innerHeight * 0.8);
-      }
-
-      ticking = false;
-    }
-
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(updateProgress);
-        ticking = true;
-      }
-    }, { passive: true });
-
-    // Event listener untuk tombol kembali ke atas
-    if (backToTop) {
-      backToTop.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-  })();
-
-  /* ==============================================
-     MODUL: ANIMASI PEMBUKAAN HERO
-     Animasi pengungkapan teks judul hero dengan efek masker
-     ============================================== */
-  window.addEventListener('load', () => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.querySelectorAll('.line').forEach(el => el.style.transform = 'translateY(0)');
-      return;
-    }
-
-    if (typeof gsap !== 'undefined') {
-      gsap.to('[data-line1]', { yPercent: 0, duration: 1.2, ease: 'power4.out', delay: 0.8 });
-      gsap.to('[data-line2]', { yPercent: 0, duration: 1.2, ease: 'power4.out', delay: 0.95 });
-    } else {
-      // Fallback jika GSAP tidak tersedia
-      document.querySelectorAll('.line').forEach((el, i) => {
-        setTimeout(() => {
-          el.style.transition = 'transform 1.2s cubic-bezier(.22,1,.36,1)';
-          el.style.transform = 'translateY(0)';
-        }, 800 + i * 150);
-      });
-    }
-  });
-
-  /* ==============================================
-     MODUL: ANIMASI FADE-UP
-     Mengamati elemen dan menerapkan animasi fade-up saat masuk viewport
-     ============================================== */
-  (function() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-in');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
-
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-  })();
-
-  /* ==============================================
-     MODUL: ANIMASI HITUNG NAIK
-     Menganimasikan angka statistik dari nol ke nilai target
-     ============================================== */
-  (function() {
-    const countElements = document.querySelectorAll('[data-count]');
-    if (!countElements.length) return;
-
-    const countObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateCountUp(entry.target);
-          countObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    countElements.forEach(el => countObserver.observe(el));
-
-    /**
-     * Menganimasikan angka dari 0 ke nilai target dengan easing
-     * @param {HTMLElement} el - Elemen yang berisi angka
-     */
-    function animateCountUp(el) {
-      const target = parseInt(el.dataset.count, 10);
-      const suffix = el.dataset.suffix || '';
-      const duration = 1800;
-      const startTime = performance.now();
-
-      function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // Easing: ease-out quartic
-        const eased = 1 - Math.pow(1 - progress, 4);
-        const current = Math.floor(eased * target);
-        el.textContent = current + suffix;
-
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        } else {
-          el.textContent = target + suffix;
-        }
-      }
-
-      requestAnimationFrame(update);
-    }
-  })();
-
-  /* ==============================================
-     MODUL: GULIR HORIZONTAL PINNED
-     Mengonversi gulir vertikal menjadi gulir horizontal pada Karya (desktop)
-     ============================================== */
-  (function() {
-    if (window.matchMedia('(max-width: 1024px)').matches) return;
-
-    const viewport = document.getElementById('works-viewport');
-    const track = document.getElementById('works-track');
-    const progressFill = document.getElementById('works-progress-fill');
-    if (!viewport || !track) return;
-
-    let scrollWidth = 0;
-    let lastY = window.scrollY;
-    let skewTimeout = null;
-    let ticking = false;
-
-    /** Menghitung ulang dimensi gulir horizontal */
-    function recalc() {
-      scrollWidth = track.scrollWidth - window.innerWidth;
-      viewport.style.height = (window.innerHeight + Math.max(0, scrollWidth)) + 'px';
-    }
-    recalc();
-    window.addEventListener('resize', recalc);
-
-    function onScroll() {
-      const rect = viewport.getBoundingClientRect();
-      const top = rect.top;
-
-      if (top <= 0 && top >= -scrollWidth) {
-        const p = (-top) / scrollWidth;
-        track.style.transform = `translate3d(${-p * scrollWidth}px, 0, 0)`;
-        if (progressFill) progressFill.style.width = (p * 100) + '%';
-
-        // Efek skew pada kartu saat gulir cepat
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          const v = window.scrollY - lastY;
-          const skew = Math.max(-8, Math.min(8, v * 0.35));
-          track.querySelectorAll('.work-card').forEach(c => {
-            c.style.transform = `skewX(${skew}deg)`;
-          });
-          clearTimeout(skewTimeout);
-          skewTimeout = setTimeout(() => {
-            track.querySelectorAll('.work-card').forEach(c => {
-              c.style.transform = 'skewX(0deg)';
-            });
-          }, 200);
-        }
-      } else if (top > 0) {
-        track.style.transform = 'translate3d(0, 0, 0)';
-        if (progressFill) progressFill.style.width = '0%';
-      } else if (top < -scrollWidth) {
-        track.style.transform = `translate3d(${-scrollWidth}px, 0, 0)`;
-        if (progressFill) progressFill.style.width = '100%';
-      }
-
-      lastY = window.scrollY;
-      ticking = false;
-    }
-
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        requestAnimationFrame(onScroll);
-        ticking = true;
-      }
-    }, { passive: true });
-  })();
-
-  /* ==============================================
-     MODUL: GALERI MOSAIK
-     Efek hover push-back pada galeri mosik (desktop)
-     ============================================== */
-  (function() {
-    if (window.matchMedia('(max-width: 900px)').matches) return;
-    const grid = document.getElementById('gallery-grid');
-    if (!grid) return;
-
-    grid.querySelectorAll('.gallery-tile').forEach(tile => {
-      tile.addEventListener('mouseenter', () => grid.classList.add('has-hover'));
-      tile.addEventListener('mouseleave', () => grid.classList.remove('has-hover'));
-    });
-  })();
-
-  /* ==============================================
-     MODUL: TOMBOL MAGNETIK
-     Efek magnetik pada tombol CTA yang mengikuti posisi mouse (desktop)
-     ============================================== */
-  (function() {
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const buttons = document.querySelectorAll('[data-magnetic]');
-    const STRENGTH = 0.3;
-
-    buttons.forEach(btn => {
-      let rafId = null;
-
-      btn.addEventListener('mouseenter', () => {
-        btn.classList.add('is-magnetic');
-      });
-
-      btn.addEventListener('mousemove', (e) => {
-        const rect = btn.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-
-        if (rafId) cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => {
-          btn.style.transform = `translate(${x * STRENGTH}px, ${y * STRENGTH}px)`;
-        });
-      });
-
-      btn.addEventListener('mouseleave', () => {
-        if (rafId) cancelAnimationFrame(rafId);
-        btn.style.transform = '';
-        btn.classList.remove('is-magnetic');
-      });
-    });
-  })();
-</script>
+<script>!function(){const e=document.getElementById("preloader");e&&(window.addEventListener("load",(()=>{setTimeout((()=>{e.classList.add("is-loaded")}),600)})),setTimeout((()=>{e.classList.add("is-loaded")}),3e3))}(),function(){const e=document.documentElement,t=document.getElementById("lamp-switch"),a=document.getElementById("theme-toggle"),o=document.getElementById("lamp-label-light"),r=document.getElementById("lamp-label-dark"),n=document.getElementById("lamp-status"),i=document.getElementById("lamp-watermark");let s=localStorage.getItem("theme");function l(s){e.setAttribute("data-theme",s);const l="dark"===s;t.setAttribute("aria-pressed",l),o.classList.toggle("is-active",!l),r.classList.toggle("is-active",l),n.textContent=l?"Mode aktif: Gelap":"Mode aktif: Terang",i.textContent=l?"GELAP":"TERANG",a.setAttribute("aria-pressed",l)}function c(){const t="dark"===e.getAttribute("data-theme")?"light":"dark";l(t),localStorage.setItem("theme",t)}s||(s=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),l(s),a.addEventListener("click",c),t.addEventListener("click",c),t.addEventListener("keydown",(e=>{"Enter"!==e.key&&" "!==e.key||(e.preventDefault(),c())}))}(),function(){const e=document.getElementById("nav-toggle"),t=document.getElementById("nav-overlay");if(e&&t){function a(){e.classList.remove("is-open"),t.classList.remove("is-open"),document.body.style.overflow=""}e.addEventListener("click",(()=>{const a=e.classList.toggle("is-open");t.classList.toggle("is-open",a),document.body.style.overflow=a?"hidden":""})),t.querySelectorAll("a").forEach((e=>{e.addEventListener("click",a)}))}const o=document.querySelectorAll("[data-nav-link]"),r=document.querySelectorAll("section[id]");if(o.length&&r.length){let i=!1;function n(){const e=.4*window.innerHeight;let t=null,a=-1/0;r.forEach((o=>{const r=o.getBoundingClientRect();r.top<=e&&r.top>a&&(t=o.getAttribute("id"),a=r.top)})),o.forEach((e=>{e.classList.toggle("is-active",e.getAttribute("href")==="#"+t)})),i=!1}window.addEventListener("scroll",(()=>{i||(requestAnimationFrame(n),i=!0)}),{passive:!0}),window.addEventListener("resize",n),n(),window.addEventListener("load",(()=>{setTimeout(n,700)}))}document.querySelectorAll('a[href^="#"]').forEach((e=>{e.addEventListener("click",(t=>{const a=e.getAttribute("href");if("#"===a||a.length<=1)return;const o=document.querySelector(a);o&&(t.preventDefault(),o.scrollIntoView({behavior:"smooth",block:"start"}))}))}))}(),function(){if(window.matchMedia("(pointer: coarse)").matches)return;const e=document.querySelector(".cursor-dot"),t=document.querySelector(".cursor-ring");if(!e||!t)return;let a=0,o=0,r=0,n=0;window.addEventListener("mousemove",(r=>{a=r.clientX,o=r.clientY,e.classList.add("is-visible"),t.classList.add("is-visible"),e.style.transform=`translate(${a-3}px, ${o-3}px)`})),window.addEventListener("mouseout",(a=>{a.relatedTarget||(e.classList.remove("is-visible"),t.classList.remove("is-visible"))})),function e(){r+=.15*(a-r),n+=.15*(o-n),t.style.transform=`translate(${r-18}px, ${n-18}px)`,requestAnimationFrame(e)}();document.querySelectorAll("a, button, .work-card, .gallery-tile, .video-frame, .video-card, .expertise-item, .photo-placeholder, .lamp-switch, .theme-toggle, .back-to-top").forEach((e=>{e.addEventListener("mouseenter",(()=>{t.style.width="60px",t.style.height="60px"})),e.addEventListener("mouseleave",(()=>{t.style.width="36px",t.style.height="36px"}))}))}(),function(){const e=document.getElementById("scroll-progress"),t=document.getElementById("back-to-top");if(!e)return;let a=!1;function o(){const o=window.scrollY,r=document.documentElement.scrollHeight-window.innerHeight,n=r>0?o/r*100:0;e.style.width=n+"%",t&&t.classList.toggle("is-visible",o>.8*window.innerHeight),a=!1}window.addEventListener("scroll",(()=>{a||(requestAnimationFrame(o),a=!0)}),{passive:!0}),t&&t.addEventListener("click",(()=>{window.scrollTo({top:0,behavior:"smooth"})}))}(),window.addEventListener("load",(()=>{window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelectorAll(".line").forEach((e=>e.style.transform="translateY(0)")):"undefined"!=typeof gsap?(gsap.to("[data-line1]",{yPercent:0,duration:1.2,ease:"power4.out",delay:.8}),gsap.to("[data-line2]",{yPercent:0,duration:1.2,ease:"power4.out",delay:.95})):document.querySelectorAll(".line").forEach(((e,t)=>{setTimeout((()=>{e.style.transition="transform 1.2s cubic-bezier(.22,1,.36,1)",e.style.transform="translateY(0)"}),800+150*t)}))})),function(){const e=new IntersectionObserver((t=>{t.forEach((t=>{t.isIntersecting&&(t.target.classList.add("is-in"),e.unobserve(t.target))}))}),{threshold:.12,rootMargin:"0px 0px -50px 0px"});document.querySelectorAll(".fade-up").forEach((t=>e.observe(t)))}(),function(){const e=document.querySelectorAll("[data-count]");if(!e.length)return;const t=new IntersectionObserver((e=>{e.forEach((e=>{e.isIntersecting&&(a(e.target),t.unobserve(e.target))}))}),{threshold:.15,rootMargin:"0px 0px -20px 0px"});function a(e){if("true"===e.dataset.animated)return;e.dataset.animated="true";const t=parseInt(e.dataset.count,10),a=e.dataset.suffix||"",o=performance.now();requestAnimationFrame((function r(n){const i=n-o,s=Math.min(i/1800,1),l=1-Math.pow(1-s,4),c=Math.floor(l*t);e.textContent=c+a,s<1?requestAnimationFrame(r):e.textContent=t+a}))}e.forEach((e=>t.observe(e))),window.addEventListener("load",(()=>{setTimeout((()=>{e.forEach((e=>{if("true"===e.dataset.animated)return;const t=e.getBoundingClientRect();t.top<window.innerHeight&&t.bottom>0&&a(e)}))}),900)}))}(),function(){const e=document.getElementById("works-carousel");if(!e)return;const t=Array.from(e.querySelectorAll(".work-card")),a=document.getElementById("works-prev"),o=document.getElementById("works-next"),r=document.getElementById("works-dots");if(0===t.length)return;let n=0,i=null;t.forEach(((e,t)=>{const a=document.createElement("button");a.classList.add("work-dot"),a.setAttribute("aria-label","Ke karya "+(t+1)),a.addEventListener("click",(()=>{c(t),m()})),r.appendChild(a)}));const s=Array.from(r.querySelectorAll(".work-dot"));function l(){t.forEach(((e,a)=>{e.classList.remove("is-active","is-prev","is-next"),a===n?e.classList.add("is-active"):a===(n-1+t.length)%t.length?e.classList.add("is-prev"):a===(n+1)%t.length&&e.classList.add("is-next")})),s.forEach(((e,t)=>{e.classList.toggle("is-active",t===n)}))}function c(e){n=(e+t.length)%t.length,l()}function d(){c(n+1)}function u(){c(n-1)}function _(){window.matchMedia("(prefers-reduced-motion: reduce)").matches||(i=setInterval(d,4e3))}function m(){clearInterval(i),_()}o.addEventListener("click",(()=>{d(),m()})),a.addEventListener("click",(()=>{u(),m()}));let h=0,g=0;e.addEventListener("touchstart",(e=>{h=e.changedTouches[0].screenX}),{passive:!0}),e.addEventListener("touchend",(e=>{g=e.changedTouches[0].screenX,g<h-50&&(d(),m()),g>h+50&&(u(),m())}),{passive:!0}),e.addEventListener("mouseenter",(()=>clearInterval(i))),e.addEventListener("mouseleave",_),l(),_()}(),function(){if(window.matchMedia("(max-width: 900px)").matches)return;const e=document.getElementById("gallery-grid");e&&e.querySelectorAll(".gallery-tile").forEach((t=>{t.addEventListener("mouseenter",(()=>e.classList.add("has-hover"))),t.addEventListener("mouseleave",(()=>e.classList.remove("has-hover")))}))}(),function(){if(window.matchMedia("(pointer: coarse)").matches)return;if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;const e=document.querySelectorAll("[data-magnetic]");e.forEach((e=>{let t=null;e.addEventListener("mouseenter",(()=>{e.classList.add("is-magnetic")})),e.addEventListener("mousemove",(a=>{const o=e.getBoundingClientRect(),r=a.clientX-o.left-o.width/2,n=a.clientY-o.top-o.height/2;t&&cancelAnimationFrame(t),t=requestAnimationFrame((()=>{e.style.transform=`translate(${.3*r}px, ${.3*n}px)`}))})),e.addEventListener("mouseleave",(()=>{t&&cancelAnimationFrame(t),e.style.transform="",e.classList.remove("is-magnetic")}))}))}(),function(){const e=document.getElementById("lang-btn"),t=document.getElementById("lang-dropdown"),a=document.querySelectorAll(".lang-option"),o=document.getElementById("current-lang"),r={id:{nav_about:"Tentang",nav_expertise:"Keahlian",nav_works:"Karya",nav_watch:"Tontonan",nav_contact:"Kontak",hero_eyebrow:"Portofolio Personal — David Firdaus",hero_title_1:"Membangun pengalaman",hero_title_2:"digital yang berkesan.",hero_subtitle:"Saya adalah seorang Web Developer dan UI Designer yang berfokus pada pengembangan website modern, aplikasi berbasis web, serta otomasi menggunakan API. Saya menikmati proses mengubah ide menjadi produk digital yang cepat, responsif, dan mudah digunakan.",hero_meta_role:"Peran",hero_meta_role_val:"Web Developer & UI Designer",hero_meta_loc:"Lokasi",hero_meta_loc_val:"Indonesia",hero_meta_year:"Tahun",hero_meta_year_val:"2026",hero_cta_kicker:"Untuk karya lengkap",hero_cta_text:"Kunjungi website",hero_cta_cv:"Download CV",hero_scroll:"Gulirkan",about_p1:"Halo, saya <strong>David Firdaus</strong>, seorang mahasiswa Teknik Informatika sekaligus pengembang web yang memiliki ketertarikan besar pada teknologi, desain antarmuka, dan pengalaman pengguna.",about_p2:"Saya terbiasa membangun website menggunakan HTML, CSS, JavaScript, PHP, MySQL, dan Cloudflare. Selain mengembangkan aplikasi web, saya juga mengeksplorasi integrasi API, Telegram Bot, optimasi performa website, hingga deployment ke hosting.",about_quote:'"Teknologi terbaik adalah teknologi yang terasa sederhana bagi penggunanya."',about_p3:"Bagi saya, sebuah produk digital bukan hanya harus terlihat menarik, tetapi juga memiliki performa yang cepat, struktur kode yang rapi, serta mudah dikembangkan di masa depan.",about_sig1:"— David Firdaus",about_sig2:"Mahasiswa Teknik Informatika"},en:{nav_about:"About",nav_expertise:"Expertise",nav_works:"Works",nav_watch:"Watch",nav_contact:"Contact",hero_eyebrow:"Personal Portfolio — David Firdaus",hero_title_1:"Building memorable",hero_title_2:"digital experiences.",hero_subtitle:"I am a Web Developer and UI Designer focused on modern website development, web-based applications, and API automation. I enjoy the process of turning ideas into digital products that are fast, responsive, and easy to use.",hero_meta_role:"Role",hero_meta_role_val:"Web Developer & UI Designer",hero_meta_loc:"Location",hero_meta_loc_val:"Indonesia",hero_meta_year:"Year",hero_meta_year_val:"2026",hero_cta_kicker:"For full portfolio",hero_cta_text:"Visit website",hero_cta_cv:"Download CV",hero_scroll:"Scroll",about_p1:"Hello, I am <strong>David Firdaus</strong>, an Informatics Engineering student and web developer with a strong interest in technology, interface design, and user experience.",about_p2:"I am accustomed to building websites using HTML, CSS, JavaScript, PHP, MySQL, and Cloudflare. Besides developing web applications, I also explore API integration, Telegram Bots, website performance optimization, and hosting deployment.",about_quote:'"The best technology is technology that feels simple to its users."',about_p3:"For me, a digital product must not only look attractive but also have fast performance, clean code structure, and be easy to develop in the future.",about_sig1:"— David Firdaus",about_sig2:"Informatics Engineering Student"},es:{nav_about:"Acerca de",nav_expertise:"Experiencia",nav_works:"Proyectos",nav_watch:"Ver",nav_contact:"Contacto",hero_eyebrow:"Portafolio Personal — David Firdaus",hero_title_1:"Creando experiencias",hero_title_2:"digitales memorables.",hero_subtitle:"Soy un Desarrollador Web y Diseñador de UI enfocado en el desarrollo de sitios web modernos, aplicaciones basadas en web y automatización mediante API. Disfruto el proceso de convertir ideas en productos digitales rápidos, receptivos y fáciles de usar.",hero_meta_role:"Rol",hero_meta_role_val:"Desarrollador Web & Diseñador UI",hero_meta_loc:"Ubicación",hero_meta_loc_val:"Indonesia",hero_meta_year:"Año",hero_meta_year_val:"2026",hero_cta_kicker:"Para el portafolio completo",hero_cta_text:"Visitar sitio web",hero_cta_cv:"Descargar CV",hero_scroll:"Desplázate",about_p1:"Hola, soy <strong>David Firdaus</strong>, estudiante de Ingeniería Informática y desarrollador web con un gran interés en la tecnología, el diseño de interfaces y la experiencia del usuario.",about_p2:"Estoy acostumbrado a crear sitios web utilizando HTML, CSS, JavaScript, PHP, MySQL y Cloudflare. Además de desarrollar aplicaciones web, también exploro la integración de API, Telegram Bots, la optimización del rendimiento y el despliegue en hosting.",about_quote:'"La mejor tecnología es la que parece simple para sus usuarios."',about_p3:"Para mí, un producto digital no solo debe verse atractivo, sino también tener un rendimiento rápido, una estructura de código limpia y ser fácil de desarrollar en el futuro.",about_sig1:"— David Firdaus",about_sig2:"Estudiante de Ingeniería Informática"},de:{nav_about:"Über mich",nav_expertise:"Fachwissen",nav_works:"Werke",nav_watch:"Ansehen",nav_contact:"Kontakt",hero_eyebrow:"Persönliches Portfolio — David Firdaus",hero_title_1:"Einprägsame digitale",hero_title_2:"Erlebnisse schaffen.",hero_subtitle:"Ich bin Webentwickler und UI-Designer mit Schwerpunkt auf moderner Webentwicklung, webbasierten Anwendungen und API-Automatisierung. Ich genieße den Prozess, Ideen in schnelle, reaktionsschnelle und benutzerfreundliche digitale Produkte umzuwandeln.",hero_meta_role:"Rolle",hero_meta_role_val:"Webentwickler & UI-Designer",hero_meta_loc:"Standort",hero_meta_loc_val:"Indonesien",hero_meta_year:"Jahr",hero_meta_year_val:"2026",hero_cta_kicker:"Für das vollständige Portfolio",hero_cta_text:"Website besuchen",hero_cta_cv:"CV herunterladen",hero_scroll:"Scrollen",about_p1:"Hallo, ich bin <strong>David Firdaus</strong>, Student der Informatik und Webentwickler mit großem Interesse an Technologie, Interface-Design und Benutzererfahrung.",about_p2:"Ich bin es gewohnt, Websites mit HTML, CSS, JavaScript, PHP, MySQL und Cloudflare zu erstellen. Neben der Entwicklung von Webanwendungen erkunde ich auch API-Integration, Telegram-Bots, Leistungsoptimierung und Hosting-Bereitstellung.",about_quote:'"Die beste Technologie ist Technologie, die sich für den Benutzer einfach anfühlt."',about_p3:"Für mich muss ein digitales Produkt nicht nur attraktiv aussehen, sondern auch eine hohe Leistung, eine saubere Code-Struktur und eine zukunftsorientierte Entwicklung ermöglichen.",about_sig1:"— David Firdaus",about_sig2:"Informatik-Student"},fr:{nav_about:"À propos",nav_expertise:"Expertise",nav_works:"Projets",nav_watch:"Regarder",nav_contact:"Contact",hero_eyebrow:"Portfolio Personnel — David Firdaus",hero_title_1:"Créer des expériences",hero_title_2:"numériques mémorables.",hero_subtitle:"Je suis un Développeur Web et Designer UI axé sur le développement de sites web modernes, d'applications web et l'automatisation via API. J'apprécie le processus de transformation des idées en produits numériques rapides, réactifs et faciles à utiliser.",hero_meta_role:"Rôle",hero_meta_role_val:"Développeur Web & Designer UI",hero_meta_loc:"Emplacement",hero_meta_loc_val:"Indonésie",hero_meta_year:"Année",hero_meta_year_val:"2026",hero_cta_kicker:"Pour le portfolio complet",hero_cta_text:"Visiter le site web",hero_cta_cv:"Télécharger le CV",hero_scroll:"Faire défiler",about_p1:"Bonjour, je suis <strong>David Firdaus</strong>, étudiant en génie informatique et développeur web avec un grand intérêt pour la technologie, le design d'interface et l'expérience utilisateur.",about_p2:"J'ai l'habitude de créer des sites Web utilisant HTML, CSS, JavaScript, PHP, MySQL et Cloudflare. En plus de développer des applications Web, j'explore l'intégration d'API, les bots Telegram, l'optimisation des performances et le déploiement.",about_quote:'"La meilleure technologie est celle qui semble simple à ses utilisateurs."',about_p3:"Pour moi, un produit numérique ne doit pas seulement être attrayant, mais aussi offrir des performances rapides, une structure de code propre et être facile à développer à l'avenir.",about_sig1:"— David Firdaus",about_sig2:"Étudiant en Génie Informatique"},ar:{nav_about:"نبذة",nav_expertise:"الخبرة",nav_works:"الأعمال",nav_watch:"مشاهدة",nav_contact:"اتصال",hero_eyebrow:"الملف الشخصي — ديفيد فردوس",hero_title_1:"بناء تجارب",hero_title_2:"رقمية لا تُنسى.",hero_subtitle:"أنا مطور ويب ومصمم واجهات يركز على تطوير مواقع الويب الحديثة والتطبيقات القائمة على الويب والأتمتة باستخدام واجهات برمجة التطبيقات. أستمتع بعملية تحويل الأفكار إلى منتجات رقمية سريعة الاستجابة وسهلة الاستخدام.",hero_meta_role:"الدور",hero_meta_role_val:"مطور ويب ومصمم واجهات",hero_meta_loc:"الموقع",hero_meta_loc_val:"إندونيسيا",hero_meta_year:"السنة",hero_meta_year_val:"2026",hero_cta_kicker:"للمحفظة الكاملة",hero_cta_text:"زيارة الموقع",hero_cta_cv:"تحميل السيرة الذاتية",hero_scroll:"مرر",about_p1:"مرحبا، أنا <strong>ديفيد فردوس</strong>، طالب في هندسة المعلوماتية ومطور ويب مهتم جدا بالتكنولوجيا وتصميم الواجهات وتجربة المستخدم.",about_p2:"معتاد على بناء مواقع الويب باستخدام HTML و CSS و JavaScript و PHP و MySQL و Cloudflare. إلى جانب تطوير تطبيقات الويب، أستكشف أيضًا تكامل API وروبوتات Telegram وتحسين الأداء والنشر على الاستضافة.",about_quote:'"أفضل تقنية هي التقنية التي تبدو بسيطة لمستخدميها."',about_p3:"بالنسبة لي، يجب أن لا يكون المنتج الرقمي جذاباً فحسب، بل يجب أن يكون سريع الأداء، نظيف الكود، وسهل التطوير في المستقبل.",about_sig1:"— ديفيد فردوس",about_sig2:"طالب هندسة معلوماتية"},zh:{nav_about:"关于",nav_expertise:"专长",nav_works:"作品",nav_watch:"观看",nav_contact:"联系",hero_eyebrow:"个人作品集 — David Firdaus",hero_title_1:"构建令人难忘的",hero_title_2:"数字体验。",hero_subtitle:"我是一名网页开发者和UI设计师，专注于现代网站开发、基于网页的应用程序以及API自动化。我享受将想法转化为快速、响应迅速且易于使用的数字产品的过程。",hero_meta_role:"角色",hero_meta_role_val:"网页开发者 & UI设计师",hero_meta_loc:"位置",hero_meta_loc_val:"印度尼西亚",hero_meta_year:"年份",hero_meta_year_val:"2026",hero_cta_kicker:"查看完整作品集",hero_cta_text:"访问网站",hero_cta_cv:"下载简历",hero_scroll:"滚动",about_p1:"你好，我是<strong>David Firdaus</strong>，一名信息工程学生兼网页开发者，对技术、界面设计和用户体验有浓厚的兴趣。",about_p2:"我习惯使用 HTML、CSS、JavaScript、PHP、MySQL 和 Cloudflare 构建网站。除了开发网页应用程序，我还探索 API 集成、Telegram 机器人、性能优化和主机部署。",about_quote:'"最好的技术是让用户感觉简单的技术。"',about_p3:"对我来说，数字产品不仅要外观吸引人，还要有快速的性能、整洁的代码结构，并且在未来易于开发。",about_sig1:"— David Firdaus",about_sig2:"信息工程学生"},ja:{nav_about:"について",nav_expertise:"専門知識",nav_works:"作品",nav_watch:"見る",nav_contact:"連絡先",hero_eyebrow:"個人ポートフォリオ — David Firdaus",hero_title_1:"記憶に残る",hero_title_2:"デジタル体験の構築。",hero_subtitle:"私は、モダンなウェブサイト開発、ウェブベースのアプリケーション、API自動化に焦点を当てているウェブ開発者およびUIデザイナーです。アイデアを速く、応答性が高く、使いやすいデジタル製品に変えるプロセスを楽しんでいます。",hero_meta_role:"役割",hero_meta_role_val:"ウェブ開発者 & UIデザイナー",hero_meta_loc:"場所",hero_meta_loc_val:"インドネシア",hero_meta_year:"年",hero_meta_year_val:"2026",hero_cta_kicker:"完全なポートフォリオについて",hero_cta_text:"ウェブサイトにアクセス",hero_cta_cv:"履歴書をダウンロード",hero_scroll:"スクロール",about_p1:"こんにちは、私は<strong>David Firdaus</strong>です。情報工学の学生であり、テクノロジー、インターフェースデザイン、ユーザー体験に強い関心を持つウェブ開発者です。",about_p2:"HTML、CSS、JavaScript、PHP、MySQL、Cloudflareを使用してウェブサイトを構築することに慣れています。ウェブアプリケーションの開発だけでなく、API統合、Telegramボット、パフォーマンスの最適化、ホスティングへのデプロイも探求しています。",about_quote:'"最高のテクノロジーは、ユーザーにとってシンプルに感じられるテクノロジーです。"',about_p3:"私にとって、デジタル製品は魅力的に見えるだけでなく、パフォーマンスが高く、コード構造が整理されており、将来開発しやすいものでなければなりません。",about_sig1:"— David Firdaus",about_sig2:"情報工学学生"},ko:{nav_about:"소개",nav_expertise:"전문성",nav_works:"작업",nav_watch:"시청",nav_contact:"연락처",hero_eyebrow:"개인 포트폴리오 — David Firdaus",hero_title_1:"기억에 남는",hero_title_2:"디지털 경험 구축.",hero_subtitle:"저는 모던 웹사이트 개발, 웹 기반 애플리케이션 및 API 자동화에 중점을 둔 웹 개발자이자 UI 디자이너입니다. 아이디어를 빠르고 반응이 빠르며 사용하기 쉬운 디지털 제품으로 전환하는 과정을 즐깁니다.",hero_meta_role:"역할",hero_meta_role_val:"웹 개발자 & UI 디자이너",hero_meta_loc:"위치",hero_meta_loc_val:"인도네시아",hero_meta_year:"연도",hero_meta_year_val:"2026",hero_cta_kicker:"전체 포트폴리오 보기",hero_cta_text:"웹사이트 방문",hero_cta_cv:"이력서 다운로드",hero_scroll:"스크롤",about_p1:"안녕하세요, 저는 <strong>David Firdaus</strong>입니다. 정보 공학 학생이자 기술, 인터페이스 디자인 및 사용자 경험에 큰 관심을 가진 웹 개발자입니다.",about_p2:"HTML, CSS, JavaScript, PHP, MySQL 및 Cloudflare를 사용하여 웹사이트를 구축하는 데 익숙합니다. 웹 응용 프로그램을 개발하는 것 외에도 API 통합, Telegram 봇, 성능 최적화 및 호스팅 배포를 탐구합니다.",about_quote:'"최고의 기술은 사용자에게 단순하게 느껴지는 기술입니다."',about_p3:"저에게 디지털 제품은 매력적으로 보일 뿐만 아니라 빠른 성능, 깔끔한 코드 구조, 미래의 개발 용이성을 갖춰야 합니다.",about_sig1:"— David Firdaus",about_sig2:"정보 공학 학생"}};e.addEventListener("click",(e=>{e.stopPropagation(),t.classList.toggle("is-open")})),document.addEventListener("click",(()=>{t.classList.remove("is-open")})),a.forEach((e=>{e.addEventListener("click",(n=>{n.stopPropagation();!function(e){const t=document.querySelectorAll("[data-i18n]");t.forEach((e=>e.classList.add("translating"))),setTimeout((()=>{t.forEach((t=>{const a=t.getAttribute("data-i18n");r[e]&&r[e][a]&&(t.innerHTML=r[e][a])})),"ar"===e?document.documentElement.setAttribute("dir","rtl"):document.documentElement.setAttribute("dir","ltr"),t.forEach((e=>e.classList.remove("translating")))}),200),o.textContent=e.toUpperCase(),a.forEach((t=>{t.classList.toggle("is-active",t.getAttribute("data-lang")===e)}))}(e.getAttribute("data-lang")),t.classList.remove("is-open")}))}))}()</script>
 </body>
 </html>
