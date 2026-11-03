@@ -58,7 +58,7 @@ Personal portfolio website of **David Firdaus**, a Web Developer & UI Designer a
 
 ```bash
 git clone https://github.com/davidfirdaus08/about_me.git
-cd about_me
+cd portofolio
 ```
 
 Then either open `index.html` directly in your browser, or serve it locally:
