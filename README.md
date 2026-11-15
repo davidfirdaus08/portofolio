@@ -2,7 +2,7 @@
 
 Personal portfolio website of **David Firdaus**, a Web Developer & UI Designer and Informatics Engineering student from Indonesia. Built with pure HTML, CSS, and JavaScript, with a minimalist editorial design, smooth animations, and a multilingual interface.
 
-🔗 **Live:** [dflinks.pages.dev]([https://dflinks.pages.dev/](https://davidfirdaus.pages.dev/))
+🔗 **Live:** [dflinks.pages.dev](https://davidfirdaus.pages.dev/)
 
 ## ✨ Features
 
