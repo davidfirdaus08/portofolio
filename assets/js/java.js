@@ -576,3 +576,181 @@ window.addEventListener("load", () => {
     });
   });
 }();
+
+!function(){
+  const dock = document.getElementById("dock");
+  if(!dock) return;
+  const penanda = document.getElementById("dock-penanda"),
+        bar = document.getElementById("dock-progres"),
+        item = Array.from(dock.querySelectorAll("a.dock-item")),
+        reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let aktif = -1, kunci = false, ada = false, antri = false, tKunci, tGeser, tDiam, yAkhir = window.scrollY;
+
+  const ukur = a => ({x: a.offsetLeft, y: a.offsetTop, w: a.offsetWidth, h: a.offsetHeight});
+
+  function taruh(x, y, w, h){
+    penanda.style.width = w + "px";
+    penanda.style.height = h + "px";
+    penanda.style.transform = `translate(${x}px,${y}px)`;
+  }
+
+  function tanpaTransisi(t){
+    penanda.style.transition = "none";
+    taruh(t.x, t.y, t.w, t.h);
+    void penanda.offsetWidth;
+    penanda.style.transition = "";
+  }
+
+  function pindah(idx){
+    if(idx === aktif) return;
+    const lama = aktif;
+    aktif = idx;
+    item.forEach((a, i) => {
+      a.classList.toggle("aktif", i === idx);
+      if(i === idx) a.setAttribute("aria-current", "true");
+      else a.removeAttribute("aria-current");
+    });
+    clearTimeout(tGeser);
+    if(idx < 0){
+      penanda.style.opacity = "0";
+      ada = false;
+      return;
+    }
+    const t = ukur(item[idx]);
+    if(!ada || lama < 0){
+      tanpaTransisi(t);
+      penanda.style.opacity = "1";
+      ada = true;
+      return;
+    }
+    const l = ukur(item[lama]),
+          kiri = Math.min(l.x, t.x),
+          kanan = Math.max(l.x + l.w, t.x + t.w);
+    taruh(kiri, t.y, kanan - kiri, t.h);
+    tGeser = setTimeout(() => taruh(t.x, t.y, t.w, t.h), 150);
+  }
+
+  function sinkron(){
+    if(kunci) return;
+    pindah(item.findIndex(a => a.classList.contains("is-active")));
+  }
+
+  const pengamat = new MutationObserver(sinkron);
+  item.forEach(a => pengamat.observe(a, {attributes: true, attributeFilter: ["class"]}));
+
+  item.forEach((a, i) => a.addEventListener("click", () => {
+    if(navigator.vibrate) navigator.vibrate(8);
+    kunci = true;
+    pindah(i);
+    clearTimeout(tKunci);
+    tKunci = setTimeout(() => { kunci = false; sinkron(); }, 1100);
+  }));
+
+  function gulir(){
+    antri = false;
+    const y = window.scrollY,
+          dy = y - yAkhir,
+          total = document.documentElement.scrollHeight - window.innerHeight;
+    yAkhir = y;
+    bar.style.transform = `scaleX(${total > 0 ? Math.min(1, y / total) : 0})`;
+    if(reduce) return;
+    if(dy > 6 && y > 120) dock.classList.add("kecil");
+    else if(dy < -6) dock.classList.remove("kecil");
+    clearTimeout(tDiam);
+    tDiam = setTimeout(() => dock.classList.remove("kecil"), 900);
+  }
+
+  window.addEventListener("scroll", () => {
+    if(antri) return;
+    antri = true;
+    requestAnimationFrame(gulir);
+  }, {passive: true});
+
+  dock.addEventListener("pointerdown", () => dock.classList.remove("kecil"));
+  dock.addEventListener("pointermove", e => {
+    const r = dock.getBoundingClientRect();
+    dock.style.setProperty("--lx", (e.clientX - r.left) + "px");
+    dock.style.setProperty("--ly", (e.clientY - r.top) + "px");
+  });
+
+  window.addEventListener("resize", () => {
+    if(aktif >= 0) tanpaTransisi(ukur(item[aktif]));
+  });
+
+  function munculkan(){ setTimeout(() => dock.classList.add("tampil"), 900); }
+  if(document.readyState === "complete") munculkan();
+  else window.addEventListener("load", munculkan);
+  window.addEventListener("load", () => setTimeout(() => {
+    if(aktif >= 0) tanpaTransisi(ukur(item[aktif]));
+  }, 800));
+
+  sinkron();
+  gulir();
+
+  const tombolBahasa = document.getElementById("dock-lang"),
+        kode = document.getElementById("dock-lang-kode"),
+        sheet = document.getElementById("lang-sheet"),
+        panel = sheet.querySelector(".lang-sheet-panel"),
+        veil = document.getElementById("lang-sheet-veil"),
+        pilihan = Array.from(sheet.querySelectorAll(".sheet-lang"));
+
+  function buka(){
+    sheet.classList.add("terbuka");
+    sheet.setAttribute("aria-hidden", "false");
+    tombolBahasa.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  }
+
+  function tutup(){
+    sheet.classList.remove("terbuka");
+    sheet.setAttribute("aria-hidden", "true");
+    tombolBahasa.setAttribute("aria-expanded", "false");
+    panel.style.transform = "";
+    document.body.style.overflow = "";
+  }
+
+  tombolBahasa.addEventListener("click", () => {
+    if(navigator.vibrate) navigator.vibrate(8);
+    sheet.classList.contains("terbuka") ? tutup() : buka();
+  });
+  veil.addEventListener("click", tutup);
+  document.addEventListener("keydown", e => {
+    if(e.key === "Escape" && sheet.classList.contains("terbuka")) tutup();
+  });
+
+  pilihan.forEach(b => b.addEventListener("click", () => {
+    const asli = document.querySelector('.lang-option[data-lang="' + b.getAttribute("data-lang") + '"]');
+    if(asli) asli.click();
+    tutup();
+  }));
+
+  document.querySelectorAll(".lang-option").forEach(o => o.addEventListener("click", () => {
+    const bhs = o.getAttribute("data-lang");
+    document.documentElement.lang = bhs;
+    kode.textContent = bhs.toUpperCase();
+    pilihan.forEach(b => b.classList.toggle("is-active", b.getAttribute("data-lang") === bhs));
+  }));
+
+  let y0 = null, dy = 0;
+  panel.addEventListener("pointerdown", e => {
+    if(!e.target.closest(".lang-sheet-head")) return;
+    y0 = e.clientY;
+    dy = 0;
+    panel.style.transition = "none";
+    panel.setPointerCapture(e.pointerId);
+  });
+  panel.addEventListener("pointermove", e => {
+    if(y0 === null) return;
+    dy = Math.max(0, e.clientY - y0);
+    panel.style.transform = `translateY(${dy}px)`;
+  });
+  function lepas(){
+    if(y0 === null) return;
+    y0 = null;
+    panel.style.transition = "";
+    if(dy > 90) tutup();
+    else panel.style.transform = "";
+  }
+  panel.addEventListener("pointerup", lepas);
+  panel.addEventListener("pointercancel", lepas);
+}();
